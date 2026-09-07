@@ -2,9 +2,10 @@ import SwiftData
 import SwiftUI
 
 enum FinanceSection: String, CaseIterable {
-    case contracts = "Contratos"
     case receivables = "Receber"
     case payables = "Pagar"
+    case notes = "Notas"
+    case contracts = "Contratos"
 }
 
 struct FinanceRootView: View {
@@ -15,13 +16,16 @@ struct FinanceRootView: View {
     @State private var contracts: [Contract] = []
     @State private var receivables: [Receivable] = []
     @State private var payables: [Payable] = []
+    @State private var invoices: [Invoice] = []
     @State private var clients: [Client] = []
     @State private var profile: Profile?
 
     @State private var showCreateContract = false
     @State private var showCreateReceivable = false
     @State private var showCreatePayable = false
+    @State private var showCreateInvoice = false
     @State private var pendingTaxPrompt: Receivable?
+    @State private var pendingInvoicePrompt: Receivable?
 
     var body: some View {
         NavigationStack {
@@ -44,6 +48,8 @@ struct FinanceRootView: View {
                             ReceivableListView(receivables: $receivables, onMarkReceived: markReceived)
                         case .payables:
                             PayableListView(payables: $payables, onMarkPaid: markPaid)
+                        case .notes:
+                            InvoiceListView(invoices: $invoices, onMarkIssued: markIssued)
                         }
                     }
                     .padding(20)
@@ -56,6 +62,7 @@ struct FinanceRootView: View {
             }
             .navigationDestination(for: Client.self) { ClientDetailView(client: $0) }
             .navigationDestination(for: Contract.self) { ContractDetailView(contract: $0) }
+            .navigationDestination(for: Budget.self) { BudgetDetailView(budget: $0) }
         }
         .sheet(isPresented: $showCreateContract) {
             ContractFormSheet(clients: clients) { input in
@@ -75,6 +82,22 @@ struct FinanceRootView: View {
                 reload()
             }
         }
+        .sheet(isPresented: $showCreateInvoice) {
+            InvoiceFormSheet(contracts: contracts, clients: clients) { contractId, clientId, number, amount, plannedDate in
+                try? invoiceRepository()?.create(contractId: contractId, clientId: clientId, number: number, amount: amount, plannedDate: plannedDate)
+                reload()
+            }
+        }
+        .sheet(item: $pendingInvoicePrompt) { receivable in
+            InvoiceFormSheet(
+                contracts: contracts, clients: clients,
+                prefillClientId: receivable.clientId, prefillContractId: receivable.contractId,
+                prefillAmount: receivable.amount
+            ) { contractId, clientId, number, amount, plannedDate in
+                try? invoiceRepository()?.create(contractId: contractId, clientId: clientId, number: number, amount: amount, plannedDate: plannedDate)
+                reload()
+            }
+        }
         .alert("Gerar imposto sobre este recebimento?", isPresented: Binding(
             get: { pendingTaxPrompt != nil },
             set: { if !$0 { pendingTaxPrompt = nil } }
@@ -90,7 +113,7 @@ struct FinanceRootView: View {
                 pendingTaxPrompt = nil
             }
         } message: {
-            Text("Usa a alíquota padrão do seu perfil. A emissão de nota fiscal chega na Fase 4.")
+            Text("Usa a alíquota padrão do seu perfil.")
         }
         .onAppear(perform: reload)
     }
@@ -99,6 +122,14 @@ struct FinanceRootView: View {
         HStack {
             Text("Financeiro").font(MioMeiFont.screenTitle).foregroundStyle(OnGradientText.primary)
             Spacer()
+            NavigationLink {
+                BudgetListView()
+            } label: {
+                Image(systemName: "doc.text")
+                    .foregroundStyle(OnGradientText.primary)
+                    .frame(width: 40, height: 40)
+                    .glassSurface(.light, cornerRadius: 20)
+            }
             NavigationLink {
                 ClientListView()
             } label: {
@@ -116,12 +147,16 @@ struct FinanceRootView: View {
         case .contracts: showCreateContract = true
         case .receivables: showCreateReceivable = true
         case .payables: showCreatePayable = true
+        case .notes: showCreateInvoice = true
         }
     }
 
+    /// Ao marcar como recebido, sugere registrar nota + gerar imposto sobre o
+    /// valor (mio-escopo.md §6.4, §9).
     private func markReceived(_ receivable: Receivable) {
         try? receivableRepository()?.markReceived(receivable)
         reload()
+        pendingInvoicePrompt = receivable
         if let rate = profile?.defaultTaxRate, rate > 0 {
             pendingTaxPrompt = receivable
         }
@@ -129,6 +164,11 @@ struct FinanceRootView: View {
 
     private func markPaid(_ payable: Payable) {
         try? payableRepository()?.markPaid(payable)
+        reload()
+    }
+
+    private func markIssued(_ invoice: Invoice) {
+        try? invoiceRepository()?.markIssued(invoice)
         reload()
     }
 
@@ -145,6 +185,11 @@ struct FinanceRootView: View {
     private func payableRepository() -> PayableRepository? {
         guard let userId = authManager.currentUserId else { return nil }
         return PayableRepository(modelContext: modelContext, queueStore: SyncQueueStore(modelContext: modelContext), userId: userId)
+    }
+
+    private func invoiceRepository() -> InvoiceRepository? {
+        guard let userId = authManager.currentUserId else { return nil }
+        return InvoiceRepository(modelContext: modelContext, queueStore: SyncQueueStore(modelContext: modelContext), userId: userId)
     }
 
     private func clientRepository() -> ClientRepository? {
@@ -164,5 +209,6 @@ struct FinanceRootView: View {
         contracts = (try? contractRepository()?.all()) ?? []
         receivables = (try? receivableRepository()?.all()) ?? []
         payables = (try? payableRepository()?.all()) ?? []
+        invoices = (try? invoiceRepository()?.all()) ?? []
     }
 }

@@ -28,6 +28,33 @@ extension Client {
     }
 }
 
+struct BudgetRow: Codable {
+    let id: UUID
+    let user_id: UUID
+    let client_id: UUID?
+    let title: String
+    let items: [BudgetItem]
+    let total_value: Decimal
+    let valid_until: Date?
+    let payment_terms: String?
+    let status: BudgetStatus
+    let pdf_url: String?
+    let created_at: Date
+    let updated_at: Date
+    let deleted_at: Date?
+}
+
+extension Budget {
+    var asRow: BudgetRow {
+        BudgetRow(
+            id: id, user_id: userId, client_id: clientId, title: title, items: items,
+            total_value: totalValue, valid_until: validUntil, payment_terms: paymentTerms,
+            status: status, pdf_url: pdfURL, created_at: createdAt, updated_at: updatedAt,
+            deleted_at: deletedAt
+        )
+    }
+}
+
 struct ContractRow: Codable {
     let id: UUID
     let user_id: UUID
@@ -131,6 +158,31 @@ extension Payable {
             amount: amount, due_date: dueDate, status: status, paid_at: paidAt,
             receipt_url: receiptURL, invoice_id: invoiceId, created_at: createdAt,
             updated_at: updatedAt, deleted_at: deletedAt
+        )
+    }
+}
+
+struct InvoiceRow: Codable {
+    let id: UUID
+    let user_id: UUID
+    let contract_id: UUID?
+    let client_id: UUID?
+    let number: String?
+    let amount: Decimal
+    let issue_date: Date?
+    let planned_date: Date?
+    let status: InvoiceStatus
+    let created_at: Date
+    let updated_at: Date
+    let deleted_at: Date?
+}
+
+extension Invoice {
+    var asRow: InvoiceRow {
+        InvoiceRow(
+            id: id, user_id: userId, contract_id: contractId, client_id: clientId, number: number,
+            amount: amount, issue_date: issueDate, planned_date: plannedDate, status: status,
+            created_at: createdAt, updated_at: updatedAt, deleted_at: deletedAt
         )
     }
 }

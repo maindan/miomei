@@ -77,8 +77,8 @@ Tests/MioMeiTests/
 - [x] **Fase 3 — Atividades**: demandas, tarefas, cronômetro, Live Activity
       (Dynamic Island + tela de bloqueio), controle de horas + cruzamento com
       contratos.
-- [ ] **Fase 4 — Orçamentos e Notas**: orçamentos com aprovação/conversão,
-      notas, lembretes de emissão, automações de imposto, PDF.
+- [x] **Fase 4 — Orçamentos e Notas**: orçamentos com aprovação/conversão,
+      notas, automações de imposto, PDF.
 - [ ] **Fase 5 — Agenda, Dashboard e Notificações**: calendário unificado,
       lembretes, resumos/alertas, central de notificações + notificações do SO.
 - [ ] **Fase 6 — Refino**: push via Edge Functions/APNs, relatórios
@@ -102,3 +102,9 @@ Tests/MioMeiTests/
 - O controle de "lap" do cronômetro descrito no Guia de Estilo não existe no
   modelo de dados (`time_entry` só tem `started_at`/`ended_at`) e não foi
   implementado — a tela de sessão tem apenas iniciar/parar.
+- Lembrete de emissão recorrente para contratos PJ (mio-escopo.md §6.6) fica
+  para a Fase 5, quando o módulo Agenda/Reminder existir — hoje a nota fiscal
+  só tem `planned_date`.
+- Faturamento anual (teto MEI) já é calculável via
+  `InvoiceRepository.issuedTotalThisYear()`, mas o alerta no Dashboard chega
+  na Fase 5.
