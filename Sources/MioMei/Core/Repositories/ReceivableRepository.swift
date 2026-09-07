@@ -19,8 +19,9 @@ final class ReceivableRepository {
     }
 
     func totalReceived(contractId: UUID) throws -> Decimal {
+        let receivedStatus = ReceivableStatus.received
         let received = try repo.fetch(FetchDescriptor(
-            predicate: #Predicate { $0.contractId == contractId && $0.status == ReceivableStatus.received && $0.deletedAt == nil }
+            predicate: #Predicate { $0.contractId == contractId && $0.status == receivedStatus && $0.deletedAt == nil }
         ))
         return received.reduce(0) { $0 + $1.amount }
     }
@@ -73,8 +74,9 @@ final class ReceivableRepository {
 
     /// `due_date` passou e status ainda `EXPECTED` → `OVERDUE` (mio-escopo.md §9).
     func recalculateOverdue() throws {
+        let expectedStatus = ReceivableStatus.expected
         let candidates = try repo.fetch(FetchDescriptor(
-            predicate: #Predicate { $0.userId == userId && $0.status == ReceivableStatus.expected && $0.deletedAt == nil }
+            predicate: #Predicate { $0.userId == userId && $0.status == expectedStatus && $0.deletedAt == nil }
         ))
         let today = Calendar.current.startOfDay(for: .now)
         for receivable in candidates where receivable.dueDate < today {

@@ -22,9 +22,9 @@ extension Text {
         self.monospacedDigit()
     }
 
-    func sectionLabelStyle() -> Text {
+    func sectionLabelStyle() -> some View {
         self.font(MioMeiFont.sectionLabel)
-            .textCase(.uppercase)
             .kerning(0.7)
+            .textCase(.uppercase)
     }
 }

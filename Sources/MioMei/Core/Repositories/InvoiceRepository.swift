@@ -22,8 +22,9 @@ final class InvoiceRepository {
     func issuedTotalThisYear() throws -> Decimal {
         let calendar = Calendar.current
         let yearStart = calendar.date(from: calendar.dateComponents([.year], from: .now)) ?? .now
+        let issuedStatus = InvoiceStatus.issued
         let issued = try repo.fetch(FetchDescriptor(
-            predicate: #Predicate { $0.userId == userId && $0.status == InvoiceStatus.issued && $0.deletedAt == nil }
+            predicate: #Predicate { $0.userId == userId && $0.status == issuedStatus && $0.deletedAt == nil }
         ))
         return issued.filter { ($0.issueDate ?? .distantPast) >= yearStart }.reduce(0) { $0 + $1.amount }
     }

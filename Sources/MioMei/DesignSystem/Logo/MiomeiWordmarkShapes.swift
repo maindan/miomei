@@ -1,0 +1,443 @@
+import SwiftUI
+
+/// Metricas compartilhadas pelas duas metades do wordmark "miomei." (branco + laranja),
+/// pra que ambas as `Shape` usem exatamente a mesma escala/origem e fiquem alinhadas
+/// quando desenhadas na mesma `frame`.
+///
+/// `designSize` e a bbox de todos os pixels opacos do PNG original (1338x432);
+/// `origin` (usado em `pt(_:_:)` de cada Shape) e o canto superior-esquerdo dessa bbox.
+enum MiomeiWordmarkMetrics {
+    static let designSize = CGSize(width: 1267, height: 270)
+}
+
+/// Metade branca do wordmark "miomei." (as letras "mio").
+///
+/// Vetorizado a partir de `logo/miomei-logo.png` (contorno por marching squares +
+/// simplificacao de Douglas-Peucker, tolerancia 1.0px; ver `tools/vectorize.py`).
+/// Subpaths na ordem "m" -> haste do "i" -> ponto do "i" -> "o" (com o buraco
+/// interno logo depois do contorno externo), pra caneta desenhar a palavra da
+/// esquerda pra direita e terminar no detalhe (o pontinho).
+struct MiomeiMioShape: Shape {
+    static let designSize = MiomeiWordmarkMetrics.designSize
+
+    init() {}
+
+    func path(in rect: CGRect) -> Path {
+        let scale = min(rect.width / Self.designSize.width, rect.height / Self.designSize.height)
+        let origin = CGPoint(
+            x: rect.midX - Self.designSize.width * scale / 2,
+            y: rect.midY - Self.designSize.height * scale / 2
+        )
+        // Coordenadas do PNG original; a bbox do glifo comeca em (44, 66).
+        func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(x: origin.x + (x - 44) * scale, y: origin.y + (y - 66) * scale)
+        }
+
+        var path = Path()
+
+        // Letra 1
+        // contorno, 72 pontos
+        path.move(to: pt(305, 335.5))
+        path.addLine(to: pt(291, 335.5))
+        path.addLine(to: pt(284, 333.5))
+        path.addLine(to: pt(274, 327.5))
+        path.addLine(to: pt(267.5, 317))
+        path.addLine(to: pt(265.5, 305))
+        path.addLine(to: pt(265.5, 219))
+        path.addLine(to: pt(261.5, 207))
+        path.addLine(to: pt(252, 200.5))
+        path.addLine(to: pt(240, 200.5))
+        path.addLine(to: pt(234, 202.5))
+        path.addLine(to: pt(229, 205.5))
+        path.addLine(to: pt(221.5, 215))
+        path.addLine(to: pt(218.5, 226))
+        path.addLine(to: pt(217.5, 313))
+        path.addLine(to: pt(213.5, 323))
+        path.addLine(to: pt(205, 331.5))
+        path.addLine(to: pt(194, 335.5))
+        path.addLine(to: pt(175, 334.5))
+        path.addLine(to: pt(165, 329.5))
+        path.addLine(to: pt(159.5, 324))
+        path.addLine(to: pt(155.5, 316))
+        path.addLine(to: pt(154.5, 223))
+        path.addLine(to: pt(151.5, 210))
+        path.addLine(to: pt(145, 202.5))
+        path.addLine(to: pt(140, 200.5))
+        path.addLine(to: pt(128, 200.5))
+        path.addLine(to: pt(122, 202.5))
+        path.addLine(to: pt(112.5, 211))
+        path.addLine(to: pt(108.5, 220))
+        path.addLine(to: pt(106.5, 235))
+        path.addLine(to: pt(106.5, 312))
+        path.addLine(to: pt(102.5, 323))
+        path.addLine(to: pt(94, 331.5))
+        path.addLine(to: pt(83, 335.5))
+        path.addLine(to: pt(68, 335.5))
+        path.addLine(to: pt(55, 330.5))
+        path.addLine(to: pt(47.5, 323))
+        path.addLine(to: pt(43.5, 312))
+        path.addLine(to: pt(43.5, 176))
+        path.addLine(to: pt(47.5, 165))
+        path.addLine(to: pt(52, 159.5))
+        path.addLine(to: pt(62, 153.5))
+        path.addLine(to: pt(85, 153.5))
+        path.addLine(to: pt(94, 157.5))
+        path.addLine(to: pt(99.5, 163))
+        path.addLine(to: pt(102.5, 168))
+        path.addLine(to: pt(105, 179.5))
+        path.addLine(to: pt(120, 163.5))
+        path.addLine(to: pt(134, 155.5))
+        path.addLine(to: pt(152, 151.5))
+        path.addLine(to: pt(166, 151.5))
+        path.addLine(to: pt(177, 153.5))
+        path.addLine(to: pt(192, 160.5))
+        path.addLine(to: pt(202.5, 170))
+        path.addLine(to: pt(211, 183.5))
+        path.addLine(to: pt(216.5, 175))
+        path.addLine(to: pt(225, 166.5))
+        path.addLine(to: pt(232, 161.5))
+        path.addLine(to: pt(250, 153.5))
+        path.addLine(to: pt(262, 151.5))
+        path.addLine(to: pt(277, 151.5))
+        path.addLine(to: pt(289, 153.5))
+        path.addLine(to: pt(303, 159.5))
+        path.addLine(to: pt(310, 164.5))
+        path.addLine(to: pt(316.5, 172))
+        path.addLine(to: pt(323.5, 185))
+        path.addLine(to: pt(326.5, 194))
+        path.addLine(to: pt(329.5, 213))
+        path.addLine(to: pt(329.5, 311))
+        path.addLine(to: pt(323.5, 325))
+        path.addLine(to: pt(316, 331.5))
+        path.closeSubpath()
+
+        // Letra 2
+        // contorno, 19 pontos
+        path.move(to: pt(395, 335.5))
+        path.addLine(to: pt(381, 335.5))
+        path.addLine(to: pt(369, 330.5))
+        path.addLine(to: pt(361.5, 323))
+        path.addLine(to: pt(356.5, 310))
+        path.addLine(to: pt(356.5, 179))
+        path.addLine(to: pt(358.5, 171))
+        path.addLine(to: pt(364.5, 161))
+        path.addLine(to: pt(370, 156.5))
+        path.addLine(to: pt(380, 152.5))
+        path.addLine(to: pt(395, 152.5))
+        path.addLine(to: pt(402, 154.5))
+        path.addLine(to: pt(410, 159.5))
+        path.addLine(to: pt(418.5, 172))
+        path.addLine(to: pt(420.5, 186))
+        path.addLine(to: pt(419.5, 311))
+        path.addLine(to: pt(416.5, 320))
+        path.addLine(to: pt(412.5, 326))
+        path.addLine(to: pt(406, 331.5))
+        path.closeSubpath()
+
+        // Letra 3
+        // contorno, 16 pontos
+        path.move(to: pt(395, 126.5))
+        path.addLine(to: pt(381, 126.5))
+        path.addLine(to: pt(370, 123.5))
+        path.addLine(to: pt(363, 119.5))
+        path.addLine(to: pt(354.5, 109))
+        path.addLine(to: pt(352.5, 100))
+        path.addLine(to: pt(354.5, 83))
+        path.addLine(to: pt(362, 72.5))
+        path.addLine(to: pt(371, 67.5))
+        path.addLine(to: pt(378, 65.5))
+        path.addLine(to: pt(402, 66.5))
+        path.addLine(to: pt(414, 72.5))
+        path.addLine(to: pt(421.5, 83))
+        path.addLine(to: pt(423.5, 99))
+        path.addLine(to: pt(418.5, 114))
+        path.addLine(to: pt(409, 122.5))
+        path.closeSubpath()
+
+        // Letra 4
+        // contorno, 31 pontos
+        path.move(to: pt(545, 336.5))
+        path.addLine(to: pt(530, 336.5))
+        path.addLine(to: pt(507, 333.5))
+        path.addLine(to: pt(487, 326.5))
+        path.addLine(to: pt(475, 319.5))
+        path.addLine(to: pt(461.5, 308))
+        path.addLine(to: pt(449.5, 292))
+        path.addLine(to: pt(444.5, 282))
+        path.addLine(to: pt(439.5, 263))
+        path.addLine(to: pt(439.5, 225))
+        path.addLine(to: pt(445.5, 204))
+        path.addLine(to: pt(454.5, 188))
+        path.addLine(to: pt(470, 171.5))
+        path.addLine(to: pt(482, 163.5))
+        path.addLine(to: pt(502, 155.5))
+        path.addLine(to: pt(516, 152.5))
+        path.addLine(to: pt(545, 151.5))
+        path.addLine(to: pt(561, 153.5))
+        path.addLine(to: pt(576, 157.5))
+        path.addLine(to: pt(596, 167.5))
+        path.addLine(to: pt(615.5, 185))
+        path.addLine(to: pt(621.5, 194))
+        path.addLine(to: pt(627.5, 206))
+        path.addLine(to: pt(632.5, 225))
+        path.addLine(to: pt(633.5, 255))
+        path.addLine(to: pt(631.5, 267))
+        path.addLine(to: pt(624.5, 288))
+        path.addLine(to: pt(614.5, 304))
+        path.addLine(to: pt(602, 316.5))
+        path.addLine(to: pt(584, 327.5))
+        path.addLine(to: pt(566, 333.5))
+        path.closeSubpath()
+        // contorno interno (buraco), 17 pontos
+        path.move(to: pt(541.5, 289))
+        path.addLine(to: pt(554, 284.5))
+        path.addLine(to: pt(563.5, 274))
+        path.addLine(to: pt(568.5, 260))
+        path.addLine(to: pt(569.5, 236))
+        path.addLine(to: pt(565.5, 218))
+        path.addLine(to: pt(562.5, 212))
+        path.addLine(to: pt(554, 203.5))
+        path.addLine(to: pt(542, 198.5))
+        path.addLine(to: pt(531, 198.5))
+        path.addLine(to: pt(518, 203.5))
+        path.addLine(to: pt(509.5, 212))
+        path.addLine(to: pt(503.5, 228))
+        path.addLine(to: pt(502.5, 252))
+        path.addLine(to: pt(507.5, 272))
+        path.addLine(to: pt(518, 284.5))
+        path.addLine(to: pt(532, 289.5))
+        path.closeSubpath()
+
+        return path
+    }
+}
+
+/// Metade laranja do wordmark "miomei." (as letras "mei.").
+///
+/// Mesmo processo de `MiomeiMioShape`, a partir da mesma imagem; usa o mesmo
+/// `MiomeiWordmarkMetrics` pra ficar alinhada com a metade branca. Ordem: "m" ->
+/// "e" (com buraco) -> haste do "i" -> ponto do "i" -> ponto final.
+struct MiomeiMeiShape: Shape {
+    static let designSize = MiomeiWordmarkMetrics.designSize
+
+    init() {}
+
+    func path(in rect: CGRect) -> Path {
+        let scale = min(rect.width / Self.designSize.width, rect.height / Self.designSize.height)
+        let origin = CGPoint(
+            x: rect.midX - Self.designSize.width * scale / 2,
+            y: rect.midY - Self.designSize.height * scale / 2
+        )
+        // Coordenadas do PNG original; a bbox do glifo comeca em (44, 66).
+        func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(x: origin.x + (x - 44) * scale, y: origin.y + (y - 66) * scale)
+        }
+
+        var path = Path()
+
+        // Letra 1
+        // contorno, 72 pontos
+        path.move(to: pt(915, 335.5))
+        path.addLine(to: pt(901, 335.5))
+        path.addLine(to: pt(894, 333.5))
+        path.addLine(to: pt(888, 330.5))
+        path.addLine(to: pt(880.5, 323))
+        path.addLine(to: pt(878.5, 319))
+        path.addLine(to: pt(876.5, 312))
+        path.addLine(to: pt(875.5, 217))
+        path.addLine(to: pt(871.5, 207))
+        path.addLine(to: pt(867, 202.5))
+        path.addLine(to: pt(862, 200.5))
+        path.addLine(to: pt(850, 200.5))
+        path.addLine(to: pt(842, 203.5))
+        path.addLine(to: pt(835.5, 209))
+        path.addLine(to: pt(831.5, 216))
+        path.addLine(to: pt(828.5, 227))
+        path.addLine(to: pt(828.5, 308))
+        path.addLine(to: pt(823.5, 323))
+        path.addLine(to: pt(815, 331.5))
+        path.addLine(to: pt(804, 335.5))
+        path.addLine(to: pt(790, 335.5))
+        path.addLine(to: pt(782, 333.5))
+        path.addLine(to: pt(775, 329.5))
+        path.addLine(to: pt(766.5, 318))
+        path.addLine(to: pt(764.5, 310))
+        path.addLine(to: pt(764.5, 222))
+        path.addLine(to: pt(760.5, 208))
+        path.addLine(to: pt(757, 203.5))
+        path.addLine(to: pt(750, 200.5))
+        path.addLine(to: pt(739, 200.5))
+        path.addLine(to: pt(729, 204.5))
+        path.addLine(to: pt(723.5, 210))
+        path.addLine(to: pt(718.5, 221))
+        path.addLine(to: pt(717.5, 304))
+        path.addLine(to: pt(715.5, 317))
+        path.addLine(to: pt(712.5, 323))
+        path.addLine(to: pt(704, 331.5))
+        path.addLine(to: pt(693, 335.5))
+        path.addLine(to: pt(678, 335.5))
+        path.addLine(to: pt(665, 330.5))
+        path.addLine(to: pt(658.5, 324))
+        path.addLine(to: pt(653.5, 311))
+        path.addLine(to: pt(653.5, 177))
+        path.addLine(to: pt(658.5, 164))
+        path.addLine(to: pt(666, 156.5))
+        path.addLine(to: pt(673, 153.5))
+        path.addLine(to: pt(696, 153.5))
+        path.addLine(to: pt(704, 157.5))
+        path.addLine(to: pt(710.5, 164))
+        path.addLine(to: pt(714.5, 173))
+        path.addLine(to: pt(715, 179.5))
+        path.addLine(to: pt(729, 164.5))
+        path.addLine(to: pt(742, 156.5))
+        path.addLine(to: pt(755, 152.5))
+        path.addLine(to: pt(776, 151.5))
+        path.addLine(to: pt(790, 154.5))
+        path.addLine(to: pt(805, 162.5))
+        path.addLine(to: pt(813.5, 171))
+        path.addLine(to: pt(821, 183.5))
+        path.addLine(to: pt(834, 167.5))
+        path.addLine(to: pt(844, 160.5))
+        path.addLine(to: pt(860, 153.5))
+        path.addLine(to: pt(872, 151.5))
+        path.addLine(to: pt(887, 151.5))
+        path.addLine(to: pt(899, 153.5))
+        path.addLine(to: pt(915, 160.5))
+        path.addLine(to: pt(924.5, 169))
+        path.addLine(to: pt(933.5, 184))
+        path.addLine(to: pt(939.5, 211))
+        path.addLine(to: pt(939.5, 312))
+        path.addLine(to: pt(934.5, 324))
+        path.addLine(to: pt(928, 330.5))
+        path.closeSubpath()
+
+        // Letra 2
+        // contorno, 47 pontos
+        path.move(to: pt(1069, 336.5))
+        path.addLine(to: pt(1056, 336.5))
+        path.addLine(to: pt(1032, 333.5))
+        path.addLine(to: pt(1020, 330.5))
+        path.addLine(to: pt(997, 319.5))
+        path.addLine(to: pt(986, 311.5))
+        path.addLine(to: pt(970.5, 293))
+        path.addLine(to: pt(964.5, 281))
+        path.addLine(to: pt(960.5, 268))
+        path.addLine(to: pt(958.5, 257))
+        path.addLine(to: pt(958.5, 231))
+        path.addLine(to: pt(962.5, 213))
+        path.addLine(to: pt(970.5, 195))
+        path.addLine(to: pt(982.5, 179))
+        path.addLine(to: pt(993, 169.5))
+        path.addLine(to: pt(1008, 160.5))
+        path.addLine(to: pt(1024, 154.5))
+        path.addLine(to: pt(1043, 151.5))
+        path.addLine(to: pt(1061, 151.5))
+        path.addLine(to: pt(1078, 154.5))
+        path.addLine(to: pt(1101, 164.5))
+        path.addLine(to: pt(1108, 169.5))
+        path.addLine(to: pt(1122.5, 185))
+        path.addLine(to: pt(1130.5, 199))
+        path.addLine(to: pt(1135.5, 214))
+        path.addLine(to: pt(1138.5, 234))
+        path.addLine(to: pt(1138.5, 246))
+        path.addLine(to: pt(1136.5, 251))
+        path.addLine(to: pt(1129, 256.5))
+        path.addLine(to: pt(1019.5, 257))
+        path.addLine(to: pt(1021.5, 266))
+        path.addLine(to: pt(1025.5, 274))
+        path.addLine(to: pt(1034, 282.5))
+        path.addLine(to: pt(1045, 287.5))
+        path.addLine(to: pt(1056, 289.5))
+        path.addLine(to: pt(1071, 289.5))
+        path.addLine(to: pt(1092, 285.5))
+        path.addLine(to: pt(1105, 280.5))
+        path.addLine(to: pt(1115, 279.5))
+        path.addLine(to: pt(1123, 282.5))
+        path.addLine(to: pt(1129.5, 289))
+        path.addLine(to: pt(1133.5, 300))
+        path.addLine(to: pt(1132.5, 309))
+        path.addLine(to: pt(1128.5, 317))
+        path.addLine(to: pt(1123, 322.5))
+        path.addLine(to: pt(1105, 330.5))
+        path.addLine(to: pt(1088, 334.5))
+        path.closeSubpath()
+        // contorno interno (buraco), 9 pontos
+        path.move(to: pt(1085.5, 226))
+        path.addLine(to: pt(1084.5, 215))
+        path.addLine(to: pt(1079.5, 204))
+        path.addLine(to: pt(1070, 195.5))
+        path.addLine(to: pt(1059, 192.5))
+        path.addLine(to: pt(1045, 193.5))
+        path.addLine(to: pt(1031, 200.5))
+        path.addLine(to: pt(1022.5, 212))
+        path.addLine(to: pt(1018.5, 226))
+        path.closeSubpath()
+
+        // Letra 3
+        // contorno, 17 pontos
+        path.move(to: pt(1195, 335.5))
+        path.addLine(to: pt(1181, 335.5))
+        path.addLine(to: pt(1168, 330.5))
+        path.addLine(to: pt(1159.5, 321))
+        path.addLine(to: pt(1155.5, 309))
+        path.addLine(to: pt(1155.5, 180))
+        path.addLine(to: pt(1161.5, 164))
+        path.addLine(to: pt(1169, 156.5))
+        path.addLine(to: pt(1179, 152.5))
+        path.addLine(to: pt(1194, 152.5))
+        path.addLine(to: pt(1208, 158.5))
+        path.addLine(to: pt(1215.5, 167))
+        path.addLine(to: pt(1219.5, 182))
+        path.addLine(to: pt(1219.5, 305))
+        path.addLine(to: pt(1216.5, 318))
+        path.addLine(to: pt(1212.5, 325))
+        path.addLine(to: pt(1207, 330.5))
+        path.closeSubpath()
+
+        // Letra 4
+        // contorno, 18 pontos
+        path.move(to: pt(1195, 126.5))
+        path.addLine(to: pt(1181, 126.5))
+        path.addLine(to: pt(1169, 123.5))
+        path.addLine(to: pt(1159, 116.5))
+        path.addLine(to: pt(1153.5, 108))
+        path.addLine(to: pt(1151.5, 97))
+        path.addLine(to: pt(1153.5, 84))
+        path.addLine(to: pt(1156.5, 78))
+        path.addLine(to: pt(1164, 70.5))
+        path.addLine(to: pt(1170, 67.5))
+        path.addLine(to: pt(1177, 65.5))
+        path.addLine(to: pt(1201, 66.5))
+        path.addLine(to: pt(1213, 72.5))
+        path.addLine(to: pt(1220.5, 82))
+        path.addLine(to: pt(1222.5, 89))
+        path.addLine(to: pt(1222.5, 102))
+        path.addLine(to: pt(1219.5, 111))
+        path.addLine(to: pt(1210, 121.5))
+        path.closeSubpath()
+
+        // Letra 5
+        // contorno, 18 pontos
+        path.move(to: pt(1283, 334.5))
+        path.addLine(to: pt(1270, 334.5))
+        path.addLine(to: pt(1256, 329.5))
+        path.addLine(to: pt(1248.5, 323))
+        path.addLine(to: pt(1242.5, 313))
+        path.addLine(to: pt(1240.5, 302))
+        path.addLine(to: pt(1242.5, 287))
+        path.addLine(to: pt(1249.5, 275))
+        path.addLine(to: pt(1256, 269.5))
+        path.addLine(to: pt(1263, 266.5))
+        path.addLine(to: pt(1275, 264.5))
+        path.addLine(to: pt(1289, 266.5))
+        path.addLine(to: pt(1300, 272.5))
+        path.addLine(to: pt(1309.5, 286))
+        path.addLine(to: pt(1311.5, 300))
+        path.addLine(to: pt(1309.5, 312))
+        path.addLine(to: pt(1306.5, 319))
+        path.addLine(to: pt(1297, 329.5))
+        path.closeSubpath()
+
+        return path
+    }
+}

@@ -47,8 +47,9 @@ final class BudgetRepository {
 
     /// `valid_until` passou e status ainda `SENT` → `EXPIRED` (mio-escopo.md §6.2).
     func recalculateExpired() throws {
+        let sentStatus = BudgetStatus.sent
         let candidates = try repo.fetch(FetchDescriptor(
-            predicate: #Predicate { $0.userId == userId && $0.status == BudgetStatus.sent && $0.deletedAt == nil }
+            predicate: #Predicate { $0.userId == userId && $0.status == sentStatus && $0.deletedAt == nil }
         ))
         let today = Calendar.current.startOfDay(for: .now)
         for budget in candidates {

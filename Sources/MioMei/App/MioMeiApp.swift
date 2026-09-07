@@ -11,6 +11,7 @@ struct MioMeiApp: App {
     @State private var connectivity = ConnectivityMonitor()
     @State private var syncStatusStore = SyncStatusStore()
     @State private var timerStatusStore = TimerStatusStore()
+    @State private var showSplash = true
 
     init() {
         let container = MioMeiSchema.makeContainer()
@@ -41,23 +42,34 @@ struct MioMeiApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(authManager)
-                .environment(connectivity)
-                .environment(syncStatusStore)
-                .environment(timerStatusStore)
-                .modelContainer(container)
-                .preferredColorScheme(.dark)
-                .onOpenURL { url in
-                    Task { try? await SupabaseService.shared.client.auth.session(from: url) }
+            ZStack {
+                RootView()
+                    .environment(authManager)
+                    .environment(connectivity)
+                    .environment(syncStatusStore)
+                    .environment(timerStatusStore)
+                    .modelContainer(container)
+                    .onOpenURL { url in
+                        Task { try? await SupabaseService.shared.client.auth.session(from: url) }
+                    }
+                    .task {
+                        authManager.start()
+                        connectivity.start()
+                        realtimeMonitor.start()
+                        await syncEngine.syncNow()
+                        BackgroundSyncScheduler.scheduleNext()
+                    }
+
+                if showSplash {
+                    SplashView {
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            showSplash = false
+                        }
+                    }
+                    .transition(.opacity)
                 }
-                .task {
-                    authManager.start()
-                    connectivity.start()
-                    realtimeMonitor.start()
-                    await syncEngine.syncNow()
-                    BackgroundSyncScheduler.scheduleNext()
-                }
+            }
+            .preferredColorScheme(.dark)
         }
     }
 }

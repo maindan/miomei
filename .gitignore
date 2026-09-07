@@ -9,6 +9,7 @@ Config/Secrets.xcconfig
 .DS_Store
 
 # Xcode
+MioMei.xcodeproj/
 build/
 DerivedData/
 *.pbxuser

@@ -34,8 +34,9 @@ final class PayableRepository {
 
     /// `due_date` passou sem pagamento → `OVERDUE` (mio-escopo.md §9).
     func recalculateOverdue() throws {
+        let pendingStatus = PayableStatus.pending
         let candidates = try repo.fetch(FetchDescriptor(
-            predicate: #Predicate { $0.userId == userId && $0.status == PayableStatus.pending && $0.deletedAt == nil }
+            predicate: #Predicate { $0.userId == userId && $0.status == pendingStatus && $0.deletedAt == nil }
         ))
         let today = Calendar.current.startOfDay(for: .now)
         for payable in candidates where payable.dueDate < today {
@@ -68,10 +69,11 @@ final class PayableRepository {
         let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) ?? now
         let monthEnd = calendar.date(byAdding: .month, value: 1, to: monthStart) ?? now
 
+        let dasMeiType = PayableType.dasMei
         let existing = try repo.fetch(FetchDescriptor(
             predicate: #Predicate { payable in
                 payable.userId == userId &&
-                payable.type == PayableType.dasMei &&
+                payable.type == dasMeiType &&
                 payable.dueDate >= monthStart &&
                 payable.dueDate < monthEnd &&
                 payable.deletedAt == nil

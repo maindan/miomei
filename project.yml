@@ -10,6 +10,17 @@ configs:
   Debug: debug
   Release: release
 
+settings:
+  base:
+    DEVELOPMENT_TEAM: 79ZVQ4RMKX
+  configs:
+    Debug:
+      ONLY_ACTIVE_ARCH: YES
+      ENABLE_TESTABILITY: YES
+    Release:
+      ONLY_ACTIVE_ARCH: NO
+      ENABLE_TESTABILITY: NO
+
 configFiles:
   Debug: Config/Secrets.xcconfig
   Release: Config/Secrets.xcconfig
@@ -34,7 +45,24 @@ targets:
         embed: true
     info:
       path: Sources/MioMei/Resources/Info.plist
-      generateContents: false
+      properties:
+        CFBundleDisplayName: MioMei
+        CFBundleURLTypes:
+          - CFBundleURLName: com.projexsystem.miomei.oauth
+            CFBundleURLSchemes:
+              - miomei
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIUserInterfaceStyle: Dark
+        UIBackgroundModes:
+          - fetch
+          - processing
+        BGTaskSchedulerPermittedIdentifiers:
+          - com.projexsystem.miomei.sync
+        NSSupportsLiveActivities: true
+        MioMeiSupabaseHost: "$(SUPABASE_HOST)"
+        MioMeiSupabaseAnonKey: "$(SUPABASE_ANON_KEY)"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.projexsystem.miomei
@@ -59,7 +87,9 @@ targets:
       - path: Sources/MioMeiShared
     info:
       path: Sources/MioMeiWidgets/Info.plist
-      generateContents: false
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.projexsystem.miomei.widgets
@@ -80,5 +110,9 @@ targets:
       - target: MioMei
     settings:
       base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.projexsystem.miomei.tests
+        PRODUCT_NAME: MioMeiTests
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MioMei.app/MioMei"
+        BUNDLE_LOADER: "$(TEST_HOST)"

@@ -68,7 +68,7 @@ struct BottomSheetScaffold<Content: View>: View {
         .clipShape(SheetTopCorners())
         .overlay(
             SheetTopCorners()
-                .strokeBorder(GlassLayer.sheet.borderColor, lineWidth: 1)
+                .stroke(GlassLayer.sheet.borderColor, lineWidth: 1)
         )
         .ignoresSafeArea(edges: .bottom)
     }
