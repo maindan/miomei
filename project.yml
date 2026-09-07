@@ -1,0 +1,61 @@
+name: MioMei
+options:
+  bundleIdPrefix: com.projexsystem
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  developmentLanguage: pt-BR
+
+configs:
+  Debug: debug
+  Release: release
+
+configFiles:
+  Debug: Config/Secrets.xcconfig
+  Release: Config/Secrets.xcconfig
+
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: "2.5.1"
+
+targets:
+  MioMei:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Sources/MioMei
+    dependencies:
+      - package: Supabase
+        product: Supabase
+    info:
+      path: Sources/MioMei/Resources/Info.plist
+      generateContents: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.projexsystem.miomei
+        PRODUCT_NAME: MioMei
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SUPPORTS_MACCATALYST: NO
+    scheme:
+      testTargets:
+        - MioMeiTests
+      gatherCoverageData: true
+
+  MioMeiTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Tests/MioMeiTests
+    dependencies:
+      - target: MioMei
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
