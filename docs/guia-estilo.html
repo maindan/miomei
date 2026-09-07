@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MioMei — Guia de Estilo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17090c; --ink2:#33272a; --ink3:#4a3a3a; --muted:#6b5550; --muted2:#8a6b60;
+    --line:#eae1de; --accent:#b8541f; --accent-d:#7a3512; --paper:#fbf7f5;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink2);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",Manrope,system-ui,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.6;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:40px 26px 80px;}
+  a{color:var(--accent); text-decoration:none;} a:hover{color:var(--accent-d);}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88em; background:rgba(0,0,0,.05); padding:1px 5px; border-radius:6px;}
+  .tnum{font-variant-numeric:tabular-nums;}
+ 
+  header.doc{display:flex; align-items:flex-start; justify-content:space-between; gap:24px;
+    border-bottom:2px solid var(--ink); padding-bottom:18px; margin-bottom:30px; flex-wrap:wrap;}
+  .kicker{font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted2);}
+  h1{margin:8px 0 6px; font-size:40px; font-weight:800; letter-spacing:-.035em; color:var(--ink); line-height:1.0;}
+  .subtitle{font-size:15px; font-weight:500; color:var(--ink3);}
+  .meta{text-align:right; font-size:12px; font-weight:600; color:var(--muted); line-height:1.7; white-space:nowrap;}
+ 
+  h2{font-size:22px; font-weight:800; letter-spacing:-.02em; color:var(--ink); margin:38px 0 12px;}
+  h3{font-size:15px; font-weight:800; color:var(--ink); margin:18px 0 6px;}
+  p{font-size:15px; line-height:1.62; color:var(--ink2); margin:0 0 14px;}
+  .lead{border-left:3px solid var(--accent); padding:6px 0 6px 14px; font-size:13.5px; line-height:1.55; color:var(--ink3); margin:0 0 18px;}
+  .note{background:#f3ece9; border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:13px; color:var(--ink3); margin:0 0 18px;}
+ 
+  .grid{display:grid; gap:10px;}
+  .g2{grid-template-columns:repeat(2,1fr);} .g3{grid-template-columns:repeat(3,1fr);} .g4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:620px){.g2,.g3,.g4{grid-template-columns:1fr 1fr;}}
+  .card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px;}
+  .card .t{font-size:13px; font-weight:800; color:var(--ink); margin-bottom:3px;}
+  .card .d{font-size:12.5px; color:var(--ink3); line-height:1.5;}
+ 
+  table{width:100%; border-collapse:collapse; font-size:13px; margin:6px 0 14px;}
+  thead tr{background:var(--ink); color:#fff;}
+  th{text-align:left; padding:9px 11px; font-weight:700;}
+  td{padding:8px 11px; border-bottom:1px solid var(--line); color:var(--ink3); vertical-align:top;}
+  td.k{font-weight:700; color:var(--ink); white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+ 
+  .swatch{border-radius:14px; height:60px; border:1px solid rgba(0,0,0,.08); box-shadow:inset 0 1px 0 rgba(255,255,255,.12);}
+  .sw-label{font-size:12.5px; font-weight:800; color:var(--ink); margin-top:8px;}
+  .sw-stops{font-size:10.5px; color:var(--muted); line-height:1.5; font-variant-numeric:tabular-nums;}
+  .dot{display:inline-block; width:12px; height:12px; border-radius:999px; vertical-align:middle; margin-right:7px;}
+ 
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media(max-width:620px){.two{grid-template-columns:1fr;}}
+  ul.tight{margin:0 0 10px; padding-left:18px;} ul.tight li{font-size:13px; margin:3px 0; color:var(--ink3);}
+  .ok li::marker{color:#2e8b57;} .no li::marker{color:#c0392b;}
+ 
+  .demo{border-radius:20px; padding:18px; color:#fff; position:relative; overflow:hidden;}
+  .glass{background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.26);
+    -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); border-radius:16px; padding:12px 14px;}
+  .footer{margin-top:44px; padding-top:14px; border-top:1px solid var(--line); font-size:12px; color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+ 
+  <header class="doc">
+    <div>
+      <div class="kicker">Guia de estilo · v3 dark glass · iOS nativo</div>
+      <h1>MioMei — sistema visual</h1>
+      <div class="subtitle">Referência de implementação do app iOS nativo (SwiftUI) de gestão PJ/MEI</div>
+    </div>
+    <div class="meta">SF Pro (nativa) · DotGothic16<br>Base 390 × 844<br>Setembro 2026</div>
+  </header>
+ 
+  <!-- 1 -->
+  <h2>1. Princípios</h2>
+  <p>O app é <strong>escuro por padrão</strong>. Cada módulo tem um gradiente próprio que ocupa a tela inteira; o conteúdo vive em cartões de vidro translúcido sobre esse gradiente. Fundo claro só aparece em superfícies de destaque — cronômetro, botões primários, item ativo.</p>
+  <div class="grid g4">
+    <div class="card"><div class="t">Uma coluna, polegar primeiro</div><div class="d">Empilhamento vertical, navbar flutuante fixa, alvos de toque ≥ 44px.</div></div>
+    <div class="card"><div class="t">Vidro sobre gradiente</div><div class="d">Duas camadas: clara para destaque, escura para dados. Nunca uma terceira empilhada.</div></div>
+    <div class="card"><div class="t">Branco é ação</div><div class="d">Branco sólido marca CTA, FAB, item de navbar ativo e dia selecionado.</div></div>
+    <div class="card"><div class="t">Números com hierarquia</div><div class="d">Valores e durações em tabular-nums; cronômetro em curso em fonte pontilhada.</div></div>
+  </div>
+ 
+  <!-- 2 -->
+  <h2>2. Gradiente por módulo</h2>
+  <p>O gradiente é o fundo da tela cheia (não do cartão) e identifica o módulo. Ângulo 200° — o cronômetro usa 190°. Quatro paradas: preto tingido, cor média, cor viva, cor luminosa.</p>
+  <div class="grid g3">
+    <div>
+      <div class="swatch" style="background:linear-gradient(200deg,#050B1A 0%,#0C2350 34%,#1C68C6 72%,#3AA0EE 100%);"></div>
+      <div class="sw-label">Início · azul</div>
+      <div class="sw-stops">#050B1A · #0C2350 34% · #1C68C6 72% · #3AA0EE</div>
+    </div>
+    <div>
+      <div class="swatch" style="background:linear-gradient(200deg,#17090A 0%,#4D1510 30%,#C1511B 68%,#F2962E 100%);"></div>
+      <div class="sw-label">Financeiro · âmbar</div>
+      <div class="sw-stops">#17090A · #4D1510 30% · #C1511B 68% · #F2962E</div>
+    </div>
+    <div>
+      <div class="swatch" style="background:linear-gradient(200deg,#0C1512 0%,#14322A 32%,#2D7A53 70%,#6FBC7A 100%);"></div>
+      <div class="sw-label">Atividades · verde</div>
+      <div class="sw-stops">#0C1512 · #14322A 32% · #2D7A53 70% · #6FBC7A</div>
+    </div>
+    <div>
+      <div class="swatch" style="background:linear-gradient(200deg,#120B1C 0%,#2C1436 30%,#7A3358 66%,#C96A49 100%);"></div>
+      <div class="sw-label">Contrato · vinho</div>
+      <div class="sw-stops">#120B1C · #2C1436 30% · #7A3358 66% · #C96A49</div>
+    </div>
+    <div>
+      <div class="swatch" style="background:linear-gradient(200deg,#0E0B14 0%,#1D1626 34%,#4A2F45 70%,#8A5254 100%);"></div>
+      <div class="sw-label">Perfil · ameixa</div>
+      <div class="sw-stops">#0E0B14 · #1D1626 34% · #4A2F45 70% · #8A5254</div>
+    </div>
+    <div>
+      <div class="swatch" style="background:linear-gradient(190deg,#23090A 0%,#6E1F11 40%,#D9701F 78%,#F5A13A 100%);"></div>
+      <div class="sw-label">Cronômetro · âmbar quente (190°)</div>
+      <div class="sw-stops">#23090A · #6E1F11 40% · #D9701F 78% · #F5A13A</div>
+    </div>
+  </div>
+  <p class="lead" style="margin-top:16px;">Uma tela = um gradiente. Telas de detalhe herdam o gradiente do módulo de origem; sheets e modais não trocam o fundo, apenas aplicam scrim + material sobre ele.</p>
+ 
+  <!-- 3 -->
+  <h2>3. Camadas de vidro (Liquid Glass nativo)</h2>
+  <p class="lead"><strong>Liquid Glass nativo (iOS):</strong> todas as superfícies translúcidas — cartões, navbar, sheets e modais — usam o material Liquid Glass do sistema (<code>.ultraThinMaterial</code> / <code>.regularMaterial</code> / <code>glassEffect</code> conforme a versão de iOS), não blur simulado. Os valores de fundo/borda/blur abaixo são referência de <em>aparência</em>; a renderização deve delegar ao material nativo para refração e realce dinâmico corretos.</p>
+  <table>
+    <thead><tr><th>Camada</th><th>Uso</th><th>Fundo</th><th>Borda · blur</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Vidro claro</td><td>Destaque, linha de lista, timer ativo, navbar</td><td class="tnum">rgba(255,255,255,.16)</td><td class="tnum">.24 · blur 18–22</td></tr>
+      <tr><td class="k">Vidro escuro</td><td>Blocos de dados, valores, timelines, calendário</td><td class="tnum">rgba(0,0,0,.32)</td><td class="tnum">.14 · blur 20</td></tr>
+      <tr><td class="k">Sheet</td><td>Bottom sheet / modal de criação e edição</td><td class="tnum">rgba(20,8,7,.72)</td><td class="tnum">topo .20 · blur 28</td></tr>
+      <tr><td class="k">Campo interno</td><td>Inputs e sub-blocos dentro de um cartão</td><td class="tnum">rgba(255,255,255,.10)</td><td class="tnum">.16 · —</td></tr>
+      <tr><td class="k">Scrim</td><td>Fundo atrás do sheet (+ leve blur na tela)</td><td class="tnum">rgba(10,4,3,.55)</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p>Toda camada translúcida deixa o conteúdo passar por baixo — inclusive a navbar, que precisa de conteúdo rolando atrás para o material existir. Reserve ~26px no fim da coluna de conteúdo; se a última linha tiver texto essencial, reserve 64px (a faixa da navbar vai de 24px a 78px a partir da base).</p>
+ 
+  <!-- 4 -->
+  <h2>4. Tinta e estados</h2>
+  <div class="two">
+    <div>
+      <h3>Texto sobre gradiente</h3>
+      <ul class="tight">
+        <li>Primário · <code>#FFFFFF</code></li>
+        <li>Secundário · branco 60%</li>
+        <li>Rótulo · branco 50%</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Estados semânticos</h3>
+      <ul class="tight" style="list-style:none; padding-left:0;">
+        <li><span class="dot" style="background:#8FE6AC;"></span>#8FE6AC recebido · meta atingida</li>
+        <li><span class="dot" style="background:#FFCF5C;"></span>#FFCF5C atenção · a vencer</li>
+        <li><span class="dot" style="background:#FF9C8A;"></span>#FF9C8A atrasado · risco de meta</li>
+        <li><span class="dot" style="background:#9FD0FF;"></span>#9FD0FF nota fiscal · informativo</li>
+      </ul>
+    </div>
+  </div>
+  <p class="lead">Cor semântica colore texto, ponto, barra de progresso ou borda — nunca o fundo inteiro de um cartão. Única exceção: item atrasado usa fundo <code>rgba(120,20,10,.45)</code> com borda <code>rgba(255,150,130,.35)</code>.</p>
+ 
+  <!-- 5 -->
+  <h2>5. Tipografia</h2>
+  <p>A interface usa a <strong>fonte nativa do iOS — San Francisco (SF Pro)</strong>, via <code>.system</code> (SwiftUI <code>Font.system</code> / UIKit <code>UIFont.systemFont</code>). Aproveite os <strong>estilos dinâmicos</strong> do sistema (<code>largeTitle</code>, <code>title</code>, <code>headline</code>, <code>body</code>, <code>caption</code>) para herdar Dynamic Type e acessibilidade; os tamanhos abaixo são a referência de escala em ponto (pt).</p>
+  <ul class="tight">
+    <li><strong>Peso:</strong> use os pesos do SF (<code>.regular</code>, <code>.semibold</code>, <code>.bold</code>, <code>.heavy</code>) — mapeiam os 400/600/700/800 da referência.</li>
+    <li><strong>Números:</strong> aplique <code>.monospacedDigit()</code> (equivale a tabular-nums) em qualquer valor, duração ou data.</li>
+    <li><strong>Largura óptica:</strong> em títulos grandes, o SF já aplica a variante de display automaticamente; não force tracking manual além do indicado.</li>
+    <li><strong>Exceção de marca:</strong> <strong>DotGothic16</strong> permanece <em>apenas</em> nos dígitos do cronômetro em curso (fonte customizada empacotada no app); todo o resto é SF Pro.</li>
+  </ul>
+  <table>
+    <thead><tr><th>Papel</th><th>Tamanho / peso (SF)</th><th>Estilo dinâmico</th><th>Tracking</th><th>Exemplo</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Cronômetro em curso</td><td>52 · DotGothic16</td><td>—</td><td class="tnum">+0.04em</td><td style="font-family:DotGothic16,monospace; font-size:20px;">01:24:36</td></tr>
+      <tr><td class="k">Valor de destaque</td><td>34 · semibold</td><td>title / largeTitle</td><td class="tnum">−0.03em</td><td class="tnum" style="font-weight:600;">18.450,00</td></tr>
+      <tr><td class="k">Título de tela</td><td>24 · bold</td><td>title2</td><td class="tnum">−0.025em</td><td style="font-weight:700;">Financeiro</td></tr>
+      <tr><td class="k">Briefing do dia</td><td>27 · bold · lh 1.24</td><td>title / title2</td><td class="tnum">−0.025em</td><td style="font-weight:700;">Bom dia, Leandro…</td></tr>
+      <tr><td class="k">Item de lista</td><td>13 · bold</td><td>subheadline</td><td class="tnum">0</td><td style="font-weight:700;">Acme Digital</td></tr>
+      <tr><td class="k">Metadado</td><td>11 · semibold · branco 60%</td><td>caption / caption2</td><td class="tnum">0</td><td class="tnum">10/09 · mensalidade PJ</td></tr>
+      <tr><td class="k">Rótulo de seção</td><td>10–11 · bold · caixa alta</td><td>caption2</td><td class="tnum">+0.07em</td><td style="text-transform:uppercase; letter-spacing:.07em; font-weight:700; font-size:11px;">Esta semana</td></tr>
+    </tbody>
+  </table>
+  <p>Nada abaixo de 10px. Quando o valor é o protagonista do cartão, o símbolo R$ fica à esquerda e o número à direita, com space-between.</p>
+  <div class="note">A <strong>Manrope</strong> era a fonte de marca da referência web; no app iOS ela dá lugar à <strong>SF Pro</strong> nativa para consistência com o sistema, Dynamic Type e ajuste óptico. Mantenha só a DotGothic16 como fonte customizada empacotada, exclusiva do cronômetro.</div>
+ 
+  <!-- 6 -->
+  <h2>6. Forma e espaço</h2>
+  <table>
+    <tbody>
+      <tr><td class="k">Raio · tela (device)</td><td class="tnum">44px</td><td class="k">Padding lateral da tela</td><td class="tnum">20px</td></tr>
+      <tr><td class="k">Raio · cartão grande</td><td class="tnum">30px</td><td class="k">Gap entre cartões</td><td class="tnum">9–10px</td></tr>
+      <tr><td class="k">Raio · linha de lista</td><td class="tnum">24px</td><td class="k">Padding interno do cartão</td><td class="tnum">14 / 18 / 20px</td></tr>
+      <tr><td class="k">Raio · campo interno</td><td class="tnum">18–20px</td><td class="k">Alvo de toque mínimo</td><td class="tnum">44px</td></tr>
+      <tr><td class="k">Raio · sheet (topo)</td><td class="tnum">40px</td><td class="k">Faixa da navbar (da base)</td><td class="tnum">24 → 78px</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Respeite as <strong>safe areas</strong> do iOS: notch, Dynamic Island e a barra inferior de gestos entram no cálculo de padding. Nunca posicione texto essencial atrás da Dynamic Island nem na faixa 24–78px da base.</div>
+ 
+  <!-- 7 -->
+  <h2>7. Componentes</h2>
+ 
+  <h3>Navbar flutuante</h3>
+  <p>Pílula centralizada, <code>bottom: 24px</code>, padding 7px, material claro. Sombra <code>0 18px 34px −14px rgba(0,0,0,.5)</code>. Quatro módulos: <strong>Início, Atividades (timer), Financeiro, Agenda</strong>. Item ativo = círculo branco 48px com ícone escuro; inativo = ícone branco 85%. Configurações <em>não</em> fica na navbar — fica no topo da tela Início, ao lado do sino.</p>
+ 
+  <div class="demo" style="background:linear-gradient(200deg,#050B1A 0%,#0C2350 34%,#1C68C6 72%,#3AA0EE 100%); text-align:center; margin:8px 0 18px;">
+    <div class="glass" style="display:inline-flex; gap:6px; padding:7px; border-radius:999px;">
+      <div style="width:44px;height:44px;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;color:#17090c;font-size:12px;">Iní</div>
+      <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);font-size:11px;">Ativ</div>
+      <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);font-size:11px;">Fin</div>
+      <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);font-size:11px;">Age</div>
+    </div>
+  </div>
+ 
+  <p style="margin-bottom:6px;">Ícones em <strong>SF Symbols</strong>, peso regular, ~22px, na ordem fixa <strong>Início · Atividades · Financeiro · Agenda</strong>. O item de Atividades alterna: mostra <code>timer</code> quando há cronômetro em curso e <code>checklist</code> em repouso.</p>
+  <table>
+    <thead><tr><th>#</th><th>Módulo</th><th>SF Symbol</th><th>Ativo (círculo branco)</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td class="tnum">1</td><td class="k">Início</td><td><code>house</code></td><td><code>house.fill</code></td><td>Dashboard</td></tr>
+      <tr><td class="tnum">2</td><td class="k">Atividades</td><td><code>checklist</code> / <code>timer</code></td><td>mesmo símbolo, cor escura</td><td><code>timer</code> quando o cronômetro está rodando</td></tr>
+      <tr><td class="tnum">3</td><td class="k">Financeiro</td><td><code>creditcard</code></td><td><code>creditcard.fill</code></td><td>alternativa: <code>banknote</code></td></tr>
+      <tr><td class="tnum">4</td><td class="k">Agenda</td><td><code>calendar</code></td><td><code>calendar</code>, cor escura</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <div class="note">O <strong>FAB de criação</strong> não faz parte da navbar: círculo branco 60px com <code>plus</code>, acima da barra. O <strong>sino</strong> (<code>bell</code>) e a <strong>engrenagem</strong> (<code>gearshape</code>) ficam no topo da tela Início, nunca na navbar. Cor escura do ícone ativo = a tonalidade mais escura do gradiente do módulo em que a navbar está (ex.: Início → <code>#0b1a33</code>).</div>
+ 
+  <h3>FAB de criação</h3>
+  <p>Círculo branco 60px, somente ícone (add), <code>bottom: 102px; right: 20px</code> — acima da navbar, nunca dividindo a barra com ela e nunca sobre texto de cartão. Um FAB por tela, no máximo.</p>
+ 
+  <h3>Cabeçalho de tela</h3>
+  <p>Título 24/700 à esquerda; à direita, círculos de 40px em material claro com ícone (voltar, busca, filtro, sino, engrenagem). Em telas de detalhe: voltar · título centralizado 15/700 · mais opções.</p>
+ 
+  <h3>Segmented control</h3>
+  <p>Trilha <code>rgba(0,0,0,.28)</code> com borda .14, padding 4px, raio 999. Aba ativa em branco sólido com texto escuro 12/700; inativas em branco 75%. Até 4 abas — acima disso, use filtros em chips.</p>
+ 
+  <h3>Linha de lista (recebimento, evento, demanda)</h3>
+  <p>Material claro, raio 24, padding 14/16. Estrutura: avatar 40px (raio 14, iniciais) ou hora em tabular-nums · barra de tipo 3px colorida (na Agenda) · título 13/700 + metadado 11/600 · valor à direita. Cabeçalho de grupo em rótulo caixa-alta. Ação primária da linha pode virar botão-pílula branco compacto (“Emitir”, “Pagar”).</p>
+ 
+  <h3>Cronômetro</h3>
+  <p>Cartão claro com glow radial e dígitos pontilhados, régua de ticks com marcador central. Fundo: <code>radial-gradient(115% 85% at 50% 46%, #FF7A12, #FF9A2B 16%, #F7B573 32%, #D9DCEC 60%, #EDF0F7 80%, #F8FAFC)</code>. Controles abaixo: círculo branco 72px (pausar) entre dois círculos de vidro 54px (lap · parar).</p>
+  <div class="note"><strong>Cronômetro em segundo plano (Live Activity / Dynamic Island):</strong> quando o app vai para segundo plano com uma sessão em curso, o cronômetro aparece na Dynamic Island e na tela de bloqueio via ActivityKit, usando o acento do módulo Atividades (verde) sobre material escuro. O tempo é ancorado por <code>started_at</code> (timestamp), não por contador em memória.</p>
+ 
+  <h3>Calendário e seleção de semana</h3>
+  <p>Grade de 7 colunas em material escuro; dias em tabular-nums 13px, fins de semana a 45% de opacidade. Toque em qualquer dia seleciona a semana inteira: a linha ganha um trilho branco de raio 999 e o dia tocado um disco escuro de 34px. Faixa semanal (Agenda) usa 5 chips de 18px de raio; o dia ativo é branco com ponto colorido.</p>
+ 
+  <h3>Bottom sheet / modal</h3>
+  <p>Sobe de baixo cobrindo a navbar, raio 40 no topo, material sheet + borda superior branca 20%. Alça de 44 × 4px centralizada, título 20/700 com botão fechar 34px. Campos em vidro interno; toggles 46 × 27px (ativo = cor de acento com knob escuro). CTA branco de 58px de altura no fim. Fundo recebe scrim opaco. <strong>Confirmações de ação de risco</strong> (excluir, encerrar) usam o mesmo padrão, com a ação destrutiva em vermelho e toque explícito.</p>
+ 
+  <h3>Progresso e metas</h3>
+  <p>Barras de 6–8px, raio 999, trilha <code>rgba(255,255,255,.16)</code>, preenchimento branco (neutro) ou cor de estado (meta de horas: verde ≥ 90%, âmbar 50–89%, vermelho &lt; 50% com a semana acabando). Gráfico semanal: 7 colunas com raio 6–8px, dia atual em branco sólido, demais a 22–30%.</p>
+ 
+  <h3>Status de sincronização (Configurações)</h3>
+  <p>Como o app é offline-first, expor um indicador de sync claro. Um chip de status em material claro no topo da seção Sincronização (e um resumo compacto opcional no topo da tela Início), com estados: <strong>Sincronizado</strong> (ponto verde <code>#8FE6AC</code>), <strong>Pendente</strong> (ponto âmbar <code>#FFCF5C</code> + contagem), <strong>Sincronizando…</strong> (spinner), <strong>Offline</strong> (branco 50%) e <strong>Erro</strong> (ponto <code>#FF9C8A</code>). Abaixo, "Última sincronização há X" em metadado. O CTA <strong>Sincronizar agora</strong> segue o botão branco padrão; ao concluir, dá retorno explícito ("Tudo sincronizado") + haptic e zera a contagem.</p>
+ 
+  <!-- 8 -->
+  <h2>8. Mapa de telas</h2>
+  <table>
+    <thead><tr><th>#</th><th>Tela</th><th>Gradiente</th><th>Padrão dominante</th></tr></thead>
+    <tbody>
+      <tr><td class="tnum">01</td><td class="k">Início</td><td>azul</td><td>Briefing em texto grande + cartão de recebimentos + timer ativo; sino e engrenagem no topo</td></tr>
+      <tr><td class="tnum">02</td><td class="k">Financeiro</td><td>âmbar</td><td>Segmented (Receber/Pagar/Notas/Contratos) + saldo + lista agrupada + FAB</td></tr>
+      <tr><td class="tnum">03</td><td class="k">Novo recebimento</td><td>âmbar + scrim</td><td>Bottom sheet com valor, contrato, data, automações (nota e imposto)</td></tr>
+      <tr><td class="tnum">04</td><td class="k">Sessão / cronômetro</td><td>âmbar quente</td><td>Cartão de glow + dígitos pontilhados, totais e histórico de sessões</td></tr>
+      <tr><td class="tnum">05</td><td class="k">Horas</td><td>verde</td><td>Calendário com seleção de semana + total e gráfico semanal</td></tr>
+      <tr><td class="tnum">06</td><td class="k">Agenda</td><td>âmbar</td><td>Faixa semanal + lista de eventos com barra de tipo + FAB</td></tr>
+      <tr><td class="tnum">07</td><td class="k">Contrato</td><td>vinho</td><td>Cabeçalho de detalhe, trio estimado/recebido/a receber, meta semanal, timeline de renovações</td></tr>
+      <tr><td class="tnum">08</td><td class="k">Atividades</td><td>verde</td><td>Timer ativo no topo, cartões com play e barra de progresso + FAB</td></tr>
+      <tr><td class="tnum">09</td><td class="k">Perfil / Configurações</td><td>ameixa</td><td>Identidade da conta (Google/GitHub), dados da empresa, regime + alíquota, teto MEI, sincronização, lembretes</td></tr>
+    </tbody>
+  </table>
+ 
+  <!-- 9 -->
+  <h2>9. Regras de uso</h2>
+  <div class="two">
+    <div>
+      <h3 style="color:#2e8b57;">Faça</h3>
+      <ul class="tight ok">
+        <li>Deixe o conteúdo rolar por baixo da navbar para o material aparecer.</li>
+        <li>Use branco sólido para uma única ação primária por tela.</li>
+        <li>Agrupe listas por data com rótulos caixa-alta.</li>
+        <li>Mantenha ícones em uma família única (SF Symbols).</li>
+        <li>Alinhe valores à direita e sempre em tabular-nums.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color:#c0392b;">Evite</h3>
+      <ul class="tight no">
+        <li>Telas de fundo claro em módulos de operação.</li>
+        <li>Botão de criar dividindo a barra inferior com a navbar.</li>
+        <li>Vidro sobre vidro sobre vidro (máximo duas camadas).</li>
+        <li>Cor semântica como fundo de cartão inteiro.</li>
+        <li>Texto essencial na faixa de 24–78px da base ou atrás da Dynamic Island.</li>
+      </ul>
+    </div>
+  </div>
+ 
+  <div class="footer">MioMei · guia de estilo v3 (iOS nativo) — referência viva: o escopo funcional (<code>miomei-escopo.md</code>) e o mockup de telas são a fonte da verdade de comportamento; este guia é a fonte da verdade visual.</div>
+ 
+</div>
+</body>
+</html>
+ 
