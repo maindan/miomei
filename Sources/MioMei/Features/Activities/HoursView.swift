@@ -12,6 +12,7 @@ struct HoursView: View {
     @State private var entries: [TimeEntry] = []
     @State private var demands: [Demand] = []
     @State private var contracts: [Contract] = []
+    @State private var reportURL: URL?
 
     private var weekEnd: Date { Calendar.current.date(byAdding: .day, value: 7, to: weekStart) ?? weekStart }
     private var monthStart: Date { Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: .now)) ?? .now }
@@ -23,8 +24,12 @@ struct HoursView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Horas").font(MioMeiFont.screenTitle).foregroundStyle(OnGradientText.primary)
-                        .padding(.top, 8)
+                    HStack {
+                        Text("Horas").font(MioMeiFont.screenTitle).foregroundStyle(OnGradientText.primary)
+                        Spacer()
+                        exportButton
+                    }
+                    .padding(.top, 8)
 
                     weekSelector
 
@@ -95,6 +100,28 @@ struct HoursView: View {
         .onAppear(perform: reload)
     }
 
+    @ViewBuilder
+    private var exportButton: some View {
+        if let reportURL {
+            ShareLink(item: reportURL) {
+                Image(systemName: "square.and.arrow.up")
+                    .foregroundStyle(OnGradientText.primary)
+                    .frame(width: 34, height: 34)
+                    .glassSurface(.light, cornerRadius: 17)
+            }
+        } else {
+            Button {
+                let csv = HoursReportGenerator.csv(entries: entries, demands: demands, contracts: contracts)
+                reportURL = HoursReportGenerator.writeTemporaryFile(data: csv, suggestedName: "horas-\(weekStart.shortBR)")
+            } label: {
+                Image(systemName: "doc.text")
+                    .foregroundStyle(OnGradientText.primary)
+                    .frame(width: 34, height: 34)
+                    .glassSurface(.light, cornerRadius: 17)
+            }
+        }
+    }
+
     private var weekSelector: some View {
         HStack {
             Button { shiftWeek(by: -1) } label: { chevron("chevron.left") }
@@ -117,6 +144,7 @@ struct HoursView: View {
 
     private func shiftWeek(by weeks: Int) {
         weekStart = Calendar.current.date(byAdding: .day, value: weeks * 7, to: weekStart) ?? weekStart
+        reportURL = nil
         reload()
     }
 

@@ -7,6 +7,7 @@ protocol LocalEntity: PersistentModel {
     var id: UUID { get }
 }
 
+extension Profile: LocalEntity {}
 extension Client: LocalEntity {}
 extension Budget: LocalEntity {}
 extension Contract: LocalEntity {}

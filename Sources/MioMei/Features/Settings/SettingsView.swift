@@ -1,10 +1,12 @@
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AuthManager.self) private var authManager
     @Environment(SyncStatusStore.self) private var syncStatusStore
+    @Environment(ConnectivityMonitor.self) private var connectivity
     @Environment(\.dismiss) private var dismiss
 
     @State private var profile: Profile?
@@ -12,6 +14,9 @@ struct SettingsView: View {
     @State private var defaultTaxRateText = "0"
     @State private var dasDueDayText = "20"
     @State private var meiCeilingText = ""
+    @State private var pendingCount = 0
+    @State private var isSyncing = false
+    @State private var syncFeedback: String?
 
     var body: some View {
         ZStack {
@@ -33,9 +38,45 @@ struct SettingsView: View {
 
                     Text("Sincronização").sectionLabelStyle().foregroundStyle(OnGradientText.label)
                     GlassCard {
-                        HStack(spacing: 8) {
-                            Circle().fill(syncDotColor).frame(width: 8, height: 8)
-                            Text(syncStatusLabel).font(MioMeiFont.metadata).foregroundStyle(OnGradientText.primary)
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack(spacing: 8) {
+                                if isSyncing {
+                                    ProgressView().tint(.white).controlSize(.small)
+                                } else {
+                                    Circle().fill(syncDotColor).frame(width: 8, height: 8)
+                                }
+                                Text(syncStatusLabel).font(MioMeiFont.metadata).foregroundStyle(OnGradientText.primary)
+                                Spacer()
+                                if pendingCount > 0 {
+                                    Text("\(pendingCount) pendente(s)")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundStyle(OnGradientText.secondary)
+                                }
+                            }
+
+                            if let lastSync = syncStatusStore.lastSuccessfulSyncAt {
+                                Text("Última sincronização: \(lastSync.formatted(.relative(presentation: .named)))")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(OnGradientText.secondary)
+                            }
+
+                            if let syncFeedback {
+                                Text(syncFeedback)
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(syncFeedback.hasPrefix("Erro") || syncFeedback.hasPrefix("Sem") ? Semantic.overdue : Semantic.received)
+                            }
+
+                            Button {
+                                Task { await syncNow() }
+                            } label: {
+                                Text(isSyncing ? "Sincronizando…" : "Sincronizar agora")
+                                    .font(.system(size: 13, weight: .bold))
+                                    .foregroundStyle(.black)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 44)
+                            }
+                            .background(Color.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .disabled(isSyncing)
                         }
                     }
 
@@ -84,6 +125,7 @@ struct SettingsView: View {
     private func load() {
         guard let userId = authManager.currentUserId else { return }
         profile = try? modelContext.fetch(FetchDescriptor<Profile>(predicate: #Predicate { $0.id == userId })).first
+        pendingCount = (try? SyncQueueStore(modelContext: modelContext).pendingCount()) ?? 0
         guard let profile else { return }
         taxRegime = profile.taxRegime
         defaultTaxRateText = "\(profile.defaultTaxRate)"
@@ -98,7 +140,42 @@ struct SettingsView: View {
         profile.dasDueDay = Int(dasDueDayText) ?? 20
         profile.meiAnnualCeiling = Decimal(string: meiCeilingText.replacingOccurrences(of: ",", with: "."))
         profile.updatedAt = .now
-        try? modelContext.save()
+        let queueStore = SyncQueueStore(modelContext: modelContext)
+        try? LocalRepository<Profile>(modelContext: modelContext, queueStore: queueStore, entityName: "profile").update(profile, row: profile.asRow)
+        pendingCount = (try? queueStore.pendingCount()) ?? 0
+    }
+
+    /// Botão "Sincronizar agora" (mio-escopo.md §10.1): força push+pull e dá
+    /// retorno explícito de conclusão/erro.
+    private func syncNow() async {
+        guard connectivity.isConnected else {
+            syncFeedback = "Sem conexão — sincroniza automaticamente quando a rede voltar."
+            return
+        }
+        isSyncing = true
+        syncFeedback = nil
+        let engine = SyncEngine(
+            modelContext: modelContext,
+            queueStore: SyncQueueStore(modelContext: modelContext),
+            statusStore: syncStatusStore,
+            connectivity: connectivity,
+            supabase: SupabaseService.shared
+        )
+        await engine.syncNow()
+        isSyncing = false
+        pendingCount = (try? SyncQueueStore(modelContext: modelContext).pendingCount()) ?? 0
+
+        switch syncStatusStore.status {
+        case .synced:
+            syncFeedback = "Tudo sincronizado"
+            #if canImport(UIKit)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            #endif
+        case .error(let message):
+            syncFeedback = "Erro: \(message)"
+        default:
+            break
+        }
     }
 
     private var syncStatusLabel: String {

@@ -65,7 +65,56 @@ Sources/MioMei/
 Sources/MioMeiShared/   TimerActivityAttributes — compartilhado entre app e widget extension
 Sources/MioMeiWidgets/  extensão de Live Activity (Dynamic Island + tela de bloqueio)
 Tests/MioMeiTests/
+supabase/functions/     Edge Functions (Deno/TypeScript) — deploy manual, ver seção própria
 ```
+
+## Sincronização real (SyncEngine)
+
+`Core/Sync/SyncEngine.swift` faz push (upsert por tabela, um `PendingMutation`
+por vez, usando o payload snake_case já montado em `SyncRows.swift` via
+`AnyJSON`) e pull (`updated_at > última sincronização` por tabela, merge por
+`id` no SwiftData, `deleted_at` do servidor vira soft delete local). O botão
+"Sincronizar agora" está em Configurações, com os 4 estados do indicador
+(Sincronizado/Pendente/Sincronizando/Offline/Erro), contagem de pendentes e
+carimbo de última sincronização (persistido em `UserDefaults`, não só em
+memória). `Core/Sync/RealtimeSyncMonitor.swift` assina mudanças via Supabase
+Realtime e dispara um novo `syncNow()` quando outro dispositivo grava algo —
+**para funcionar, habilite Realtime por tabela em Database → Replication no
+painel do Supabase** (passo manual, fora do controle do app).
+
+## Relatórios exportáveis
+
+Em Atividades → Horas, o ícone de documento no topo gera um CSV das sessões
+da semana selecionada (data, demanda, contrato, duração, se foi manual) via
+`Core/Utils/HoursReportGenerator.swift`, compartilhável por `ShareLink`
+(mesmo padrão do PDF de orçamento).
+
+## Edge Functions (deploy manual)
+
+`supabase/functions/` tem o código-fonte (Deno/TypeScript) das automações
+descritas em `docs/miomei-supabase.md` §7 — **não foi feito deploy real**
+(exigiria `supabase login` interativo e a chave `.p8` de APNs, que não temos
+neste ambiente):
+
+- `recalculate-status/` — `EXPECTED→OVERDUE` / `PENDING→OVERDUE` diariamente.
+- `generate-das-mei/` — garante o DAS-MEI do mês para cada perfil MEI.
+- `send-push/` — envia push via APNs (provider token ES256 assinado a partir
+  da chave `.p8`) para os `device_token` de um usuário.
+
+Passos para deploy (rodar localmente, fora deste ambiente):
+
+```sh
+supabase login
+supabase link --project-ref tnuubrffjlhlahqxlzuj
+supabase functions deploy recalculate-status
+supabase functions deploy generate-das-mei
+supabase functions deploy send-push
+supabase secrets set APNS_KEY_P8="$(cat AuthKey_XXXX.p8)" APNS_KEY_ID=... APNS_TEAM_ID=... APNS_BUNDLE_ID=com.projexsystem.miomei APNS_ENV=sandbox
+```
+
+Depois, agende `recalculate-status` e `generate-das-mei` via **Database →
+Cron** (pg_cron + `net.http_post`, exemplo comentado no topo de cada
+`index.ts`).
 
 ## Roadmap de fases (mio-escopo.md §16)
 
@@ -81,7 +130,7 @@ Tests/MioMeiTests/
       notas, automações de imposto, PDF.
 - [x] **Fase 5 — Agenda, Dashboard e Notificações**: calendário unificado,
       lembretes, resumos/alertas, central de notificações + notificações do SO.
-- [ ] **Fase 6 — Refino**: push via Edge Functions/APNs, relatórios
+- [x] **Fase 6 — Refino**: push via Edge Functions/APNs, relatórios
       exportáveis, sync multi-dispositivo (Realtime), testes e polish.
 
 ## Notas de implementação
@@ -90,10 +139,6 @@ Tests/MioMeiTests/
   ainda não está empacotada no target — `MioMeiFont.timerRunning()` e
   `TimerSessionView` referenciam o nome da fonte e caem no fallback do sistema
   até o arquivo `.ttf` ser adicionado aos recursos do app.
-- `SyncEngine.pushPending()`/`pullChanges()` continuam esqueletos: os
-  repositórios já enfileiram cada mutação (`PendingMutation`, payload
-  snake_case em `Core/Sync/SyncRows.swift`), mas o upsert real por tabela
-  contra o Supabase chega na Fase 6 (sync multi-dispositivo).
 - **MioMeiWidgets** (extensão de Live Activity) é um target novo no
   `project.yml` — depois de `xcodegen generate`, configure um **Team** de
   assinatura para os dois targets (app e extensão) no Xcode antes de rodar em
@@ -102,22 +147,33 @@ Tests/MioMeiTests/
 - O controle de "lap" do cronômetro descrito no Guia de Estilo não existe no
   modelo de dados (`time_entry` só tem `started_at`/`ended_at`) e não foi
   implementado — a tela de sessão tem apenas iniciar/parar.
-- Lembrete de emissão recorrente para contratos PJ (mio-escopo.md §6.6) não
-  foi automatizado — o usuário cria manualmente um `Reminder` recorrente
-  (ex.: "MONTHLY:5") pela Agenda; gerar isso sozinho a partir do contrato
-  fica para a Fase 6.
+- Contrato PJ com `recurrence` preenchida ganha, na criação, um `Reminder`
+  mensal automático de emissão de nota (dia 5) — `ContractRepository.
+  scheduleInvoiceReminderIfNeeded`. Só roda ao criar; editar um contrato
+  depois para adicionar recorrência não gera o lembrete retroativamente.
 - `AlertsEngine` materializa os alertas proativos (§5, §9) como
   `NotificationItem` locais, evitando duplicar o mesmo alerta enquanto ele
   não é lido (`NotificationRepository.hasUnread(entityRef:)`); o teto MEI só
   dispara depois que o usuário preenche "Teto anual MEI" em Configurações.
-- `LocalNotificationScheduler` (UserNotifications) já dispara de verdade: ao
+- `LocalNotificationScheduler` (UserNotifications) dispara de verdade: ao
   criar um lembrete (agendado para a data escolhida) e a cada novo alerta do
   `AlertsEngine` (disparo quase imediato, já que representam algo já
-  vencido/urgente). Recebimentos, pagamentos e notas ainda não têm
-  notificação agendada individualmente na própria data — só entram na
-  Agenda e, quando vencidos/urgentes, no `AlertsEngine`; agendar por
-  entidade (com cancelamento ao editar/excluir) fica para a Fase 6.
+  vencido/urgente). **Lacuna conhecida:** recebimentos, pagamentos e notas
+  não têm notificação agendada individualmente na própria data de
+  vencimento (com cancelamento ao editar/excluir) — decisão deliberada desta
+  fase, para não arriscar notificações órfãs após edição/exclusão sem um
+  mecanismo de cancelamento testado; eles continuam aparecendo na Agenda e,
+  quando vencidos/urgentes, entram no `AlertsEngine`.
 - `CalendarEventProvider` agrega eventos no cliente a partir dos
   repositórios (não lê a view `calendar_event` do Supabase) — os dois devem
-  ficar equivalentes; documentar divergências se `pullChanges` passar a
-  trazer dados do servidor na Fase 6.
+  ficar equivalentes; como o `pullChanges` agora traz dados reais do
+  servidor, vale revisitar se algum dia fizer sentido ler a view diretamente.
+- `RealtimeSyncMonitor` e as Edge Functions não puderam ser testados de
+  ponta a ponta neste ambiente (sem macOS/Xcode e sem `supabase login`
+  interativo) — a assinatura exata de `postgresChange`/`AnyAction` no
+  supabase-swift instalado deve ser conferida ao compilar; o resto do app
+  não depende do Realtime para funcionar (push/pull manual e BGTaskScheduler
+  continuam a fonte de verdade).
+- Testes automatizados continuam limitados a funções puras
+  (`CNPJValidatorTests`, `DurationFormatterTests`) — os repositórios
+  dependem de `ModelContext`/rede e não têm suíte própria ainda.

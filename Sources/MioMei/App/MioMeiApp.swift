@@ -5,6 +5,7 @@ import SwiftUI
 struct MioMeiApp: App {
     private let container: ModelContainer
     private let syncEngine: SyncEngine
+    private let realtimeMonitor: RealtimeSyncMonitor
 
     @State private var authManager: AuthManager
     @State private var connectivity = ConnectivityMonitor()
@@ -20,6 +21,7 @@ struct MioMeiApp: App {
         let connectivity = ConnectivityMonitor()
         let statusStore = SyncStatusStore()
         let engine = SyncEngine(
+            modelContext: context,
             queueStore: queueStore,
             statusStore: statusStore,
             connectivity: connectivity,
@@ -30,6 +32,9 @@ struct MioMeiApp: App {
         _connectivity = State(initialValue: connectivity)
         _syncStatusStore = State(initialValue: statusStore)
         self.syncEngine = engine
+        self.realtimeMonitor = RealtimeSyncMonitor(supabase: .shared) {
+            Task { await engine.syncNow() }
+        }
 
         BackgroundSyncScheduler.register(syncEngine: { engine })
     }
@@ -49,6 +54,7 @@ struct MioMeiApp: App {
                 .task {
                     authManager.start()
                     connectivity.start()
+                    realtimeMonitor.start()
                     await syncEngine.syncNow()
                     BackgroundSyncScheduler.scheduleNext()
                 }

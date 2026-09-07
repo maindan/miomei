@@ -13,6 +13,20 @@ enum SyncStatus: Equatable {
 
 @Observable
 final class SyncStatusStore {
+    private static let lastSyncDefaultsKey = "com.projexsystem.miomei.lastSuccessfulSyncAt"
+
     var status: SyncStatus = .offline
-    var lastSuccessfulSyncAt: Date?
+
+    /// Persistido em `UserDefaults` — sem isso, todo relançamento do app
+    /// esqueceria a última sincronização e faria um pull completo (ainda
+    /// correto, só menos eficiente).
+    var lastSuccessfulSyncAt: Date? {
+        didSet {
+            UserDefaults.standard.set(lastSuccessfulSyncAt, forKey: Self.lastSyncDefaultsKey)
+        }
+    }
+
+    init() {
+        lastSuccessfulSyncAt = UserDefaults.standard.object(forKey: Self.lastSyncDefaultsKey) as? Date
+    }
 }

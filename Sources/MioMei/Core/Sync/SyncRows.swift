@@ -5,6 +5,35 @@ import Foundation
 // (docs/miomei-db-schema.sql), para que o push (Fase futura) possa fazer
 // upsert direto sem precisar de outro mapeamento.
 
+struct ProfileRow: Codable {
+    let id: UUID
+    let company_name: String?
+    let trade_name: String?
+    let cnpj: String?
+    let email: String?
+    let tax_regime: TaxRegime
+    let default_tax_rate: Decimal
+    let das_due_day: Int
+    let mei_annual_ceiling: Decimal?
+    let pix_key: String?
+    let bank_info: String?
+    let avatar_url: String?
+    let onboarding_done: Bool
+    let created_at: Date
+    let updated_at: Date
+}
+
+extension Profile {
+    var asRow: ProfileRow {
+        ProfileRow(
+            id: id, company_name: companyName, trade_name: tradeName, cnpj: cnpj, email: email,
+            tax_regime: taxRegime, default_tax_rate: defaultTaxRate, das_due_day: dasDueDay,
+            mei_annual_ceiling: meiAnnualCeiling, pix_key: pixKey, bank_info: bankInfo,
+            avatar_url: avatarURL, onboarding_done: onboardingDone, created_at: createdAt, updated_at: updatedAt
+        )
+    }
+}
+
 struct ClientRow: Codable {
     let id: UUID
     let user_id: UUID
