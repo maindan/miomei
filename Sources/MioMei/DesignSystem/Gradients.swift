@@ -3,7 +3,7 @@ import SwiftUI
 /// Fundo de tela cheia por módulo — Guia de Estilo MioMei §2.
 /// Ângulo 200°, exceto o cronômetro (190°). Uma tela = um gradiente;
 /// telas de detalhe herdam o gradiente do módulo de origem.
-enum ModuleGradient {
+enum ModuleGradient: Hashable {
     case inicio
     case financeiro
     case atividades

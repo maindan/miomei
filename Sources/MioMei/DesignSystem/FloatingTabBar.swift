@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum AppTab: CaseIterable {
+enum AppTab: CaseIterable, Hashable {
     case inicio, atividades, financeiro, agenda
 
     var moduleGradient: ModuleGradient {

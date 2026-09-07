@@ -11,6 +11,13 @@ import SwiftData
 final class AuthManager {
     private(set) var state: AuthState = .loading
 
+    var currentUserId: UUID? {
+        switch state {
+        case .signedIn(let userId), .awaitingOnboarding(let userId): return userId
+        case .loading, .signedOut: return nil
+        }
+    }
+
     private let supabase: SupabaseClient
     private let modelContext: ModelContext
     private var authChangesTask: Task<Void, Never>?

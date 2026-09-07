@@ -7,6 +7,6 @@ enum AuthState: Equatable {
     case signedIn(userId: UUID)
 }
 
-enum OAuthProviderChoice {
+enum OAuthProviderChoice: Hashable {
     case google, github
 }

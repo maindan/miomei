@@ -4,7 +4,7 @@ import SwiftUI
 struct GlassCard<Content: View>: View {
     let layer: GlassLayer
     var padding: CGFloat = 18
-    @ViewBuilder let content: Content
+    let content: Content
 
     init(layer: GlassLayer = .dark, padding: CGFloat = 18, @ViewBuilder content: () -> Content) {
         self.layer = layer
@@ -23,8 +23,8 @@ struct GlassCard<Content: View>: View {
 struct GlassListRow<Leading: View, Trailing: View>: View {
     let title: String
     let metadata: String?
-    @ViewBuilder let leading: Leading
-    @ViewBuilder let trailing: Trailing
+    let leading: Leading
+    let trailing: Trailing
 
     init(
         title: String,
