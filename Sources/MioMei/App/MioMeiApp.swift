@@ -9,6 +9,7 @@ struct MioMeiApp: App {
     @State private var authManager: AuthManager
     @State private var connectivity = ConnectivityMonitor()
     @State private var syncStatusStore = SyncStatusStore()
+    @State private var timerStatusStore = TimerStatusStore()
 
     init() {
         let container = MioMeiSchema.makeContainer()
@@ -39,6 +40,7 @@ struct MioMeiApp: App {
                 .environment(authManager)
                 .environment(connectivity)
                 .environment(syncStatusStore)
+                .environment(timerStatusStore)
                 .modelContainer(container)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selection: AppTab = .inicio
+    @Environment(TimerStatusStore.self) private var timerStatusStore
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -16,7 +17,7 @@ struct MainTabView: View {
                 }
             }
 
-            FloatingTabBar(selection: $selection)
+            FloatingTabBar(selection: $selection, isTimerRunning: timerStatusStore.isRunning)
         }
     }
 }

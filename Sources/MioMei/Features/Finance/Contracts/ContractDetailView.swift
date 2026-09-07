@@ -40,7 +40,7 @@ struct ContractDetailView: View {
 
                     if let weeklyHours = contract.weeklyHoursRequirement {
                         GlassCard {
-                            Text("Exigência: \(weeklyHours.formatted())h/semana — cruzamento com horas chega na Fase 3.")
+                            Text("Exigência: \(weeklyHours.formatted())h/semana — veja o progresso em Atividades > Horas.")
                                 .font(MioMeiFont.metadata)
                                 .foregroundStyle(OnGradientText.secondary)
                         }

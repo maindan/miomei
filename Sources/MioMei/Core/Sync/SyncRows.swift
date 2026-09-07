@@ -134,3 +134,71 @@ extension Payable {
         )
     }
 }
+
+struct DemandRow: Codable {
+    let id: UUID
+    let user_id: UUID
+    let contract_id: UUID?
+    let title: String
+    let description: String?
+    let priority: DemandPriority
+    let deadline: Date?
+    let status: DemandStatus
+    let created_at: Date
+    let updated_at: Date
+    let deleted_at: Date?
+}
+
+extension Demand {
+    var asRow: DemandRow {
+        DemandRow(
+            id: id, user_id: userId, contract_id: contractId, title: title,
+            description: demandDescription, priority: priority, deadline: deadline,
+            status: status, created_at: createdAt, updated_at: updatedAt, deleted_at: deletedAt
+        )
+    }
+}
+
+struct TaskItemRow: Codable {
+    let id: UUID
+    let user_id: UUID
+    let demand_id: UUID
+    let title: String
+    let done: Bool
+    let position: Int
+    let created_at: Date
+    let updated_at: Date
+    let deleted_at: Date?
+}
+
+extension TaskItem {
+    var asRow: TaskItemRow {
+        TaskItemRow(
+            id: id, user_id: userId, demand_id: demandId, title: title, done: done,
+            position: position, created_at: createdAt, updated_at: updatedAt, deleted_at: deletedAt
+        )
+    }
+}
+
+struct TimeEntryRow: Codable {
+    let id: UUID
+    let user_id: UUID
+    let demand_id: UUID
+    let started_at: Date
+    let ended_at: Date?
+    let duration_seconds: Int?
+    let is_manual: Bool
+    let created_at: Date
+    let updated_at: Date
+    let deleted_at: Date?
+}
+
+extension TimeEntry {
+    var asRow: TimeEntryRow {
+        TimeEntryRow(
+            id: id, user_id: userId, demand_id: demandId, started_at: startedAt,
+            ended_at: endedAt, duration_seconds: durationSeconds, is_manual: isManual,
+            created_at: createdAt, updated_at: updatedAt, deleted_at: deletedAt
+        )
+    }
+}

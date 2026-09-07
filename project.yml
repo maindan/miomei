@@ -26,9 +26,12 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - path: Sources/MioMei
+      - path: Sources/MioMeiShared
     dependencies:
       - package: Supabase
         product: Supabase
+      - target: MioMeiWidgets
+        embed: true
     info:
       path: Sources/MioMei/Resources/Info.plist
       generateContents: false
@@ -46,6 +49,26 @@ targets:
       testTargets:
         - MioMeiTests
       gatherCoverageData: true
+
+  MioMeiWidgets:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Sources/MioMeiWidgets
+      - path: Sources/MioMeiShared
+    info:
+      path: Sources/MioMeiWidgets/Info.plist
+      generateContents: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.projexsystem.miomei.widgets
+        PRODUCT_NAME: MioMeiWidgets
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
 
   MioMeiTests:
     type: bundle.unit-test

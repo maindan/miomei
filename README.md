@@ -52,14 +52,18 @@ completa o fluxo.
 Sources/MioMei/
   App/            entry point, ModelContainer, RootView (Login/Onboarding/Tabs)
   Core/
+    Activity/     Live Activity do cronômetro (ActivityKit) + estado da navbar
     Auth/         AuthManager (Supabase OAuth + estado de onboarding)
     Config/       leitura dos segredos do Info.plist
     Models/       @Model SwiftData espelhando docs/miomei-db-schema.sql
+    Repositories/ CRUD de domínio (Client, Contract, Receivable, Payable, Demand, TimeEntry...)
     Supabase/     cliente supabase-swift singleton
-    Sync/         fila de mutações offline-first + BGTaskScheduler
-    Utils/        CNPJValidator etc.
+    Sync/         LocalRepository genérico + fila de mutações offline-first + BGTaskScheduler
+    Utils/        CNPJValidator, formatação de moeda/duração etc.
   DesignSystem/   gradientes por módulo, Liquid Glass, tipografia, componentes
-  Features/       telas por módulo (Auth, Onboarding, Dashboard, Finance, ...)
+  Features/       telas por módulo (Auth, Onboarding, Dashboard, Finance, Activities, ...)
+Sources/MioMeiShared/   TimerActivityAttributes — compartilhado entre app e widget extension
+Sources/MioMeiWidgets/  extensão de Live Activity (Dynamic Island + tela de bloqueio)
 Tests/MioMeiTests/
 ```
 
@@ -68,9 +72,9 @@ Tests/MioMeiTests/
 - [x] **Fase 1 — Fundação**: login Google/GitHub via Supabase, onboarding MEI,
       camada offline-first (SwiftData + fila de sync), RLS, navegação e
       Liquid Glass base.
-- [ ] **Fase 2 — Financeiro core**: clientes, contratos, renovações,
+- [x] **Fase 2 — Financeiro core**: clientes, contratos, renovações,
       recebimentos, pagamentos.
-- [ ] **Fase 3 — Atividades**: demandas, tarefas, cronômetro, Live Activity
+- [x] **Fase 3 — Atividades**: demandas, tarefas, cronômetro, Live Activity
       (Dynamic Island + tela de bloqueio), controle de horas + cruzamento com
       contratos.
 - [ ] **Fase 4 — Orçamentos e Notas**: orçamentos com aprovação/conversão,
@@ -80,13 +84,21 @@ Tests/MioMeiTests/
 - [ ] **Fase 6 — Refino**: push via Edge Functions/APNs, relatórios
       exportáveis, sync multi-dispositivo (Realtime), testes e polish.
 
-## Notas de implementação da Fase 1
+## Notas de implementação
 
 - A fonte **DotGothic16** (dígitos do cronômetro em curso, Guia de Estilo §5)
-  ainda não está empacotada no target — `MioMeiFont.timerRunning()` referencia
-  o nome da fonte e cai no fallback do sistema até o arquivo `.ttf` ser
-  adicionado aos recursos do app (Fase 3, quando a tela de cronômetro é
-  construída).
-- `SyncEngine.pushPending()`/`pullChanges()` são esqueletos: a fila
-  (`PendingMutation`) e o status observável já existem, mas o upsert por
-  tabela chega junto dos repositórios de cada entidade nas próximas fases.
+  ainda não está empacotada no target — `MioMeiFont.timerRunning()` e
+  `TimerSessionView` referenciam o nome da fonte e caem no fallback do sistema
+  até o arquivo `.ttf` ser adicionado aos recursos do app.
+- `SyncEngine.pushPending()`/`pullChanges()` continuam esqueletos: os
+  repositórios já enfileiram cada mutação (`PendingMutation`, payload
+  snake_case em `Core/Sync/SyncRows.swift`), mas o upsert real por tabela
+  contra o Supabase chega na Fase 6 (sync multi-dispositivo).
+- **MioMeiWidgets** (extensão de Live Activity) é um target novo no
+  `project.yml` — depois de `xcodegen generate`, configure um **Team** de
+  assinatura para os dois targets (app e extensão) no Xcode antes de rodar em
+  dispositivo físico (Live Activity não funciona no simulador para todas as
+  versões de iOS — teste em device real quando possível).
+- O controle de "lap" do cronômetro descrito no Guia de Estilo não existe no
+  modelo de dados (`time_entry` só tem `started_at`/`ended_at`) e não foi
+  implementado — a tela de sessão tem apenas iniciar/parar.
