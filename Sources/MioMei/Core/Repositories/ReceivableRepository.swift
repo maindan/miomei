@@ -60,9 +60,8 @@ final class ReceivableRepository {
         )
     }
 
-    /// Ao marcar como recebido, o valor sugerido de imposto (alíquota do
-    /// perfil) é criado como `Payable` do tipo `invoiceTax` — a emissão de
-    /// nota fiscal em si chega na Fase 4.
+    /// Não gera o imposto nem a nota diretamente — quem orquestra as duas
+    /// sugestões (mio-escopo.md §6.4, §9) é a tela que chama este método.
     @discardableResult
     func markReceived(_ receivable: Receivable) throws -> Receivable {
         receivable.status = .received

@@ -79,7 +79,7 @@ Tests/MioMeiTests/
       contratos.
 - [x] **Fase 4 — Orçamentos e Notas**: orçamentos com aprovação/conversão,
       notas, automações de imposto, PDF.
-- [ ] **Fase 5 — Agenda, Dashboard e Notificações**: calendário unificado,
+- [x] **Fase 5 — Agenda, Dashboard e Notificações**: calendário unificado,
       lembretes, resumos/alertas, central de notificações + notificações do SO.
 - [ ] **Fase 6 — Refino**: push via Edge Functions/APNs, relatórios
       exportáveis, sync multi-dispositivo (Realtime), testes e polish.
@@ -102,9 +102,22 @@ Tests/MioMeiTests/
 - O controle de "lap" do cronômetro descrito no Guia de Estilo não existe no
   modelo de dados (`time_entry` só tem `started_at`/`ended_at`) e não foi
   implementado — a tela de sessão tem apenas iniciar/parar.
-- Lembrete de emissão recorrente para contratos PJ (mio-escopo.md §6.6) fica
-  para a Fase 5, quando o módulo Agenda/Reminder existir — hoje a nota fiscal
-  só tem `planned_date`.
-- Faturamento anual (teto MEI) já é calculável via
-  `InvoiceRepository.issuedTotalThisYear()`, mas o alerta no Dashboard chega
-  na Fase 5.
+- Lembrete de emissão recorrente para contratos PJ (mio-escopo.md §6.6) não
+  foi automatizado — o usuário cria manualmente um `Reminder` recorrente
+  (ex.: "MONTHLY:5") pela Agenda; gerar isso sozinho a partir do contrato
+  fica para a Fase 6.
+- `AlertsEngine` materializa os alertas proativos (§5, §9) como
+  `NotificationItem` locais, evitando duplicar o mesmo alerta enquanto ele
+  não é lido (`NotificationRepository.hasUnread(entityRef:)`); o teto MEI só
+  dispara depois que o usuário preenche "Teto anual MEI" em Configurações.
+- `LocalNotificationScheduler` (UserNotifications) já dispara de verdade: ao
+  criar um lembrete (agendado para a data escolhida) e a cada novo alerta do
+  `AlertsEngine` (disparo quase imediato, já que representam algo já
+  vencido/urgente). Recebimentos, pagamentos e notas ainda não têm
+  notificação agendada individualmente na própria data — só entram na
+  Agenda e, quando vencidos/urgentes, no `AlertsEngine`; agendar por
+  entidade (com cancelamento ao editar/excluir) fica para a Fase 6.
+- `CalendarEventProvider` agrega eventos no cliente a partir dos
+  repositórios (não lê a view `calendar_event` do Supabase) — os dois devem
+  ficar equivalentes; documentar divergências se `pullChanges` passar a
+  trazer dados do servidor na Fase 6.

@@ -187,6 +187,49 @@ extension Invoice {
     }
 }
 
+struct ReminderRow: Codable {
+    let id: UUID
+    let user_id: UUID
+    let title: String
+    let date: Date
+    let recurrence: String?
+    let note: String?
+    let created_at: Date
+    let updated_at: Date
+    let deleted_at: Date?
+}
+
+extension Reminder {
+    var asRow: ReminderRow {
+        ReminderRow(
+            id: id, user_id: userId, title: title, date: date, recurrence: recurrence,
+            note: note, created_at: createdAt, updated_at: updatedAt, deleted_at: deletedAt
+        )
+    }
+}
+
+struct NotificationRow: Codable {
+    let id: UUID
+    let user_id: UUID
+    let type: String
+    let title: String
+    let body: String?
+    let entity_ref: String?
+    let read_at: Date?
+    let created_at: Date
+    let updated_at: Date
+    let deleted_at: Date?
+}
+
+extension NotificationItem {
+    var asRow: NotificationRow {
+        NotificationRow(
+            id: id, user_id: userId, type: type, title: title, body: body, entity_ref: entityRef,
+            read_at: readAt, created_at: createdAt, updated_at: updatedAt, deleted_at: deletedAt
+        )
+    }
+}
+
 struct DemandRow: Codable {
     let id: UUID
     let user_id: UUID

@@ -18,7 +18,7 @@ final class InvoiceRepository {
         ))
     }
 
-    /// Total faturado no ano corrente (notas emitidas) — usado no teto MEI (Fase 5).
+    /// Total faturado no ano corrente (notas emitidas) — usado no alerta de teto MEI.
     func issuedTotalThisYear() throws -> Decimal {
         let calendar = Calendar.current
         let yearStart = calendar.date(from: calendar.dateComponents([.year], from: .now)) ?? .now
