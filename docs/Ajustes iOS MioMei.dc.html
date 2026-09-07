@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #b8541f; text-decoration: none; }
+  a:hover { color: #7a3512; }
+  * { box-sizing: border-box; }
+</style>
+</helmet>
+
+<x-import component-from-global-scope="doc-page" from="./doc-page.js" margin="0.7in" hint-size="100%,100%">
+
+  <div style="border-bottom: 2px solid #17090c; padding-bottom: 14px; margin-bottom: 22px;">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 18px; font-size: 9pt; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #8a6b60;">
+      <span>Backlog de ajustes · app iOS já desenvolvido</span>
+      <span style="letter-spacing: 0.08em; white-space: nowrap;">v3 · set 2026</span>
+    </div>
+    <h1 style="margin: 7px 0 5px; font-size: 26pt; font-weight: 800; letter-spacing: -0.03em; color: #17090c; line-height: 1.05;">O que mudar no app para bater com o design v3</h1>
+    <div style="font-size: 11pt; font-weight: 500; color: #4a3a3a; line-height: 1.45;">Lista de execução para Swift/SwiftUI, agrupada por camada e por tela. Cada item traz o comportamento esperado e o critério de aceite. Unidade: os valores em px do mockup (base 390 × 844) são 1:1 em pt no iPhone.</div>
+  </div>
+
+  <h2 style="font-size: 14pt; font-weight: 800; letter-spacing: -0.02em; color: #17090c; margin: 0 0 8px;">1. Fundação visual</h2>
+
+  <div style="display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px;">
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">1.1 Trocar todo blur simulado por Liquid Glass nativo</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Cartões, navbar, sheets, modais e os círculos de 40pt do cabeçalho passam a usar material do sistema — <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">.ultraThinMaterial</code> para vidro claro/navbar, <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">.regularMaterial</code> para blocos de dados e <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">glassEffect</code> nos sheets. Nunca <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">.blur()</code> nem fundo sólido com opacidade. Máximo duas camadas de vidro empilhadas.</div>
+      <div style="font-size: 9.5pt; font-weight: 600; color: #6b5550; margin-top: 5px;">Aceite: em movimento e ao rolar, as superfícies refratam o gradiente por baixo e o realce da borda superior acompanha a luz.</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">1.2 Tipografia: SF Pro em tudo, DotGothic16 só no cronômetro</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Remover qualquer fonte customizada de interface (a Manrope da referência web sai). Usar <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">Font.system</code> com estilos dinâmicos (largeTitle / title2 / subheadline / caption) e <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">.monospacedDigit()</code> em todo valor, duração e data. Manter só a DotGothic16 empacotada, aplicada exclusivamente aos dígitos de cronômetro em curso (tela de sessão, cartão do Início, cartão de Demandas, linha da sessão aberta em Horas).</div>
+      <div style="font-size: 9.5pt; font-weight: 600; color: #6b5550; margin-top: 5px;">Aceite: Dynamic Type funciona em todas as telas; nada abaixo de 10pt; nenhum dígito desalinha ao contar.</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">1.3 Gradiente por módulo (tela cheia, 200°, quatro paradas)</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Duas correções em relação ao que está no app: <strong>Agenda</strong> deixa de ser âmbar e passa a vinho (para não se confundir com Financeiro), e <strong>Contrato</strong> deixa de ser vinho e herda o âmbar do Financeiro, seguindo a regra de que tela de detalhe usa o gradiente do módulo de origem. Horas usa o verde de Atividades.</div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-top: 8px;">
+        <thead>
+          <tr style="background: #17090c; color: #fff;">
+            <th style="text-align: left; padding: 6px 9px; font-weight: 700;">Módulo / tela</th>
+            <th style="text-align: left; padding: 6px 9px; font-weight: 700;">Paradas</th>
+            <th style="text-align: left; padding: 6px 9px; font-weight: 700;">Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-weight: 700; color: #17090c;">Início</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">#050B1A · #0C2350 34% · #1C68C6 72% · #3AA0EE</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">manter</td></tr>
+          <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-weight: 700; color: #17090c;">Financeiro e Contrato</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">#17090A · #4D1510 30% · #C1511B 68% · #F2962E</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">aplicar no Contrato</td></tr>
+          <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-weight: 700; color: #17090c;">Atividades e Horas</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">#0C1512 · #14322A 32% · #2D7A53 70% · #6FBC7A</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">aplicar em Horas</td></tr>
+          <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-weight: 700; color: #17090c;">Agenda</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">#120B1C · #2C1436 30% · #7A3358 66% · #C96A49</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">trocar (era âmbar)</td></tr>
+          <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-weight: 700; color: #17090c;">Perfil / Configurações</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">#0E0B14 · #1D1626 34% · #4A2F45 70% · #8A5254</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">manter</td></tr>
+          <tr><td style="padding: 6px 9px; font-weight: 700; color: #17090c;">Cronômetro (190°)</td><td style="padding: 6px 9px; font-variant-numeric: tabular-nums;">#23090A · #6E1F11 40% · #D9701F 78% · #F5A13A</td><td style="padding: 6px 9px;">manter</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">1.4 Cor semântica só em tinta</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">#8FE6AC recebido/meta batida · #FFCF5C a vencer · #FF9C8A atrasado/risco · #9FD0FF nota fiscal. Colorem texto, ponto, barra ou borda — nunca o fundo do cartão inteiro. Única exceção: item atrasado com fundo <span style="font-variant-numeric: tabular-nums;">rgba(120,20,10,.45)</span> e borda <span style="font-variant-numeric: tabular-nums;">rgba(255,150,130,.35)</span>.</div>
+    </div>
+  </div>
+
+  <h2 style="font-size: 14pt; font-weight: 800; letter-spacing: -0.02em; color: #17090c; margin: 0 0 8px;">2. Navegação e chrome</h2>
+
+  <div style="display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px;">
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">2.1 Ordem e ícones da navbar</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Pílula flutuante centralizada, <span style="font-variant-numeric: tabular-nums;">bottom 24pt</span>, padding 7pt, itens de 48pt. Ordem fixa <strong>Início · Atividades · Financeiro · Agenda</strong> com <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">house</code>, <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">checklist</code>, <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">creditcard</code> e <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">calendar</code>. O ícone de Atividades <strong>não</strong> alterna com o cronômetro: é sempre <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">checklist</code> (decisão do time, sobrepõe o guia). Item ativo = círculo branco com o ícone na tonalidade mais escura do gradiente do módulo.</div>
+      <div style="font-size: 9.5pt; font-weight: 600; color: #6b5550; margin-top: 5px;">Aceite: a barra é idêntica nas quatro abas e o ícone nunca troca de forma durante uma sessão de cronômetro.</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">2.2 FAB à direita, na linha da navbar</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Círculo branco de 56pt em <span style="font-variant-numeric: tabular-nums;">bottom 27pt · trailing 20pt</span>, centrado verticalmente com a pílula (não mais 102pt acima dela). Um por tela: Financeiro, Agenda e Atividades. Sem rótulo, só <code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">plus</code>.</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">2.3 Véu de blur atrás da navbar + reserva de rolagem</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Toda tela com navbar ganha uma camada de 118pt na base, sem toque, com blur progressivo (máscara em gradiente: opaca até 40% da altura, transparente no topo) — o conteúdo continua legível por trás sem virar borrão duro. Junto disso, <strong>104pt de reserva</strong> no fim da lista (<code style="background: rgba(0,0,0,0.05); padding: 1px 4px; border-radius: 4px;">safeAreaInset(edge: .bottom)</code>), para que o último item chegue acima da barra ao rolar até o fim.</div>
+      <div style="font-size: 9.5pt; font-weight: 600; color: #6b5550; margin-top: 5px;">Aceite: rolando ao fim de qualquer lista, o último cartão fica inteiro visível; nenhum texto essencial na faixa de 24–78pt.</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">2.4 Sino e engrenagem</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Fora da navbar: dois círculos de 40pt em material claro no topo da tela Início (sino com badge de não lidas, engrenagem abrindo Configurações).</div>
+    </div>
+  </div>
+
+  <h2 style="font-size: 14pt; font-weight: 800; letter-spacing: -0.02em; color: #17090c; margin: 0 0 8px;">3. Telas novas a construir</h2>
+
+  <div style="display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px;">
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">3.1 Login (gradiente azul)</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Marca no terço superior, dois botões de provedor na zona do polegar: <strong>Continuar com Google</strong> (branco sólido, ação primária) e <strong>Continuar com GitHub</strong> (vidro claro). Sem senha própria — Supabase Auth. Rodapé com a nota de privacidade e o aviso de que a foto vem da conta escolhida. Sessão no Keychain, com renovação automática: o app abre já autenticado enquanto a sessão valer.</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">3.2 Configuração do MEI · passo 1 de 2 (gradiente ameixa)</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Só no primeiro acesso (perfil incompleto). Passo 1: CNPJ (validação de formato e dígitos, com check verde inline), nome empresarial, nome fantasia, e-mail comercial, regime tributário em segmented (MEI / Simples / Outro), alíquota, dia do DAS e o toggle do lembrete mensal. Passo 2: dados bancários / chave PIX. Barra de progresso 2/3 + 1/3 no topo e CTA branco de 58pt.</div>
+      <div style="font-size: 9.5pt; font-weight: 600; color: #6b5550; margin-top: 5px;">Aceite: regime MEI liga DAS mensal (venc. dia 20) e o monitor de teto de faturamento; Simples/outro liga o cálculo por alíquota.</div>
+    </div>
+  </div>
+
+  <h2 style="font-size: 14pt; font-weight: 800; letter-spacing: -0.02em; color: #17090c; margin: 0 0 8px;">4. Ajustes por tela</h2>
+
+  <div style="display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px;">
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">4.1 Início — sai o briefing, entra o cartão de tempo de trabalho</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Remover o texto grande de saudação ("Bom dia, Leandro…") e a linha de três métricas. No lugar, um cartão de vidro claro com: total da semana em 34pt semibold, percentual da meta e quanto falta, gráfico de 7 colunas (dia atual em branco sólido, demais a 28%) e, abaixo de um divisor, horas por contrato em barras com o par <span style="font-variant-numeric: tabular-nums;">registradas / exigidas</span> — verde ≥ 90%, âmbar 50–89%, vermelho abaixo com a semana acabando. Segue o cartão de recebimentos (2 linhas + "ver tudo") e o cartão de timer ativo com dígitos pontilhados.</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">4.2 Horas — histórico de sessões da semana</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Abaixo do calendário e do gráfico semanal, novo cartão <strong>Sessões da semana</strong>: linhas com dia (caixa alta, tabular), demanda, contrato e intervalo, duração à direita; a sessão em curso aparece em verde com os dígitos em DotGothic16 e o rótulo "→ agora". Cabeçalho com a contagem total e acesso a "ver tudo" (lista completa por período). Células do calendário a 32pt e a dica de seleção de semana em 10pt com espaçamento reduzido (8pt acima/abaixo do divisor).</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">4.3 Perfil / Configurações — status de sincronização</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Chip reativo no cartão da conta: <strong>Sincronizado</strong> (ponto #8FE6AC + "há X"), <strong>Pendente</strong> (#FFCF5C + contagem de mutações na fila), <strong>Sincronizando…</strong> (spinner), <strong>Offline</strong> (branco 50%) e <strong>Erro</strong> (#FF9C8A + motivo curto). Na seção Sincronização, CTA branco <strong>Sincronizar agora</strong> com estado de carregamento, retorno explícito ("Tudo sincronizado" + haptic), carimbo atualizado e contagem zerada; falha mantém a fila e oferece tentar de novo. Ação manual sempre executa, mesmo em rede móvel (avisando).</div>
+    </div>
+
+    <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px;">
+      <div style="font-size: 10.5pt; font-weight: 800; color: #17090c;">4.4 Agenda e Contrato</div>
+      <div style="font-size: 10pt; color: #33272a; line-height: 1.5; margin-top: 3px;">Agenda: gradiente vinho, faixa de 5 chips com o dia ativo em branco e ponto colorido, lista agrupada por dia com barra de tipo de 3pt na cor semântica do evento; ações de linha viram pílula branca compacta ("Emitir", "Pagar"). Contrato: gradiente âmbar, trio estimado/recebido/a receber, meta semanal e timeline de renovações.</div>
+    </div>
+  </div>
+
+  <h2 style="font-size: 14pt; font-weight: 800; letter-spacing: -0.02em; color: #17090c; margin: 0 0 8px;">5. Confirmação obrigatória em troca de status</h2>
+
+  <div style="border: 1px solid #eae1de; border-radius: 10px; padding: 11px 13px; margin-bottom: 20px;">
+    <div style="font-size: 10pt; color: #33272a; line-height: 1.5;">Nenhuma mudança de status acontece com um toque direto. Todo botão que altera estado — marcar recebimento como recebido, imposto como pago, nota como emitida, demanda como concluída, encerrar contrato — abre um <strong>bottom sheet de confirmação</strong> que sobe cobrindo a navbar, com scrim <span style="font-variant-numeric: tabular-nums;">rgba(10,4,3,.55)</span> e material de sheet: alça de 44 × 4pt, título, frase que explica a transição (<span style="font-weight: 700;">Previsto → Recebido</span>), resumo da entidade, os toggles de automação envolvidos (registrar nota, provisionar imposto com o valor calculado) e o par de CTAs — <strong>Cancelar</strong> em vidro + ação primária branca. Ações destrutivas (excluir, encerrar contrato com pendências, apagar registro de tempo) usam o mesmo padrão com o CTA em vermelho e exigem toque explícito — nunca gesto de swipe isolado.</div>
+    <div style="font-size: 9.5pt; font-weight: 600; color: #6b5550; margin-top: 5px;">Aceite: nenhum status muda sem confirmação; cancelar não deixa efeito colateral; confirmar dispara as automações marcadas e gera o evento correspondente na Agenda.</div>
+  </div>
+
+  <h2 style="font-size: 14pt; font-weight: 800; letter-spacing: -0.02em; color: #17090c; margin: 0 0 8px;">6. Checklist de aceite</h2>
+
+  <table style="width: 100%; border-collapse: collapse; font-size: 9.5pt;">
+    <thead>
+      <tr style="background: #17090c; color: #fff;">
+        <th style="text-align: left; padding: 6px 9px; font-weight: 700; width: 34px;">#</th>
+        <th style="text-align: left; padding: 6px 9px; font-weight: 700;">Item</th>
+        <th style="text-align: left; padding: 6px 9px; font-weight: 700; width: 120px;">Onde verificar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">01</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Superfícies translúcidas usam material do sistema, no máximo duas camadas</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">todas as telas</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">02</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Nenhuma fonte de interface fora da SF Pro; DotGothic16 apenas em cronômetro em curso</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">Início, Sessão, Atividades, Horas</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">03</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Agenda em vinho, Contrato em âmbar, Horas em verde</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">Agenda, Contrato, Horas</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">04</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Navbar na ordem Início · Atividades · Financeiro · Agenda, ícone de Atividades fixo</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">4 abas</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">05</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">FAB de 56pt à direita, alinhado à navbar, um por tela</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">Financeiro, Agenda, Atividades</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">06</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Véu de blur na base + 104pt de reserva; último item visível ao fim da rolagem</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">telas com navbar</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">07</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Login com Google e GitHub; onboarding do MEI em dois passos com CNPJ validado</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">primeiro acesso</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">08</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Dashboard com cartão de tempo de trabalho (semana, meta, horas por contrato)</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">Início</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">09</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Histórico de sessões da semana com sessão em curso destacada</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">Horas</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">10</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Chip de sync com cinco estados + "Sincronizar agora" com retorno explícito</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">Perfil</td></tr>
+      <tr><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; font-variant-numeric: tabular-nums;">11</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de;">Toda troca de status pede confirmação em sheet; destrutivas em vermelho</td><td style="padding: 6px 9px; border-bottom: 1px solid #eae1de; color: #4a3a3a;">Início, Financeiro, Agenda, Atividades</td></tr>
+      <tr><td style="padding: 6px 9px; font-variant-numeric: tabular-nums;">12</td><td style="padding: 6px 9px;">Live Activity do cronômetro na Dynamic Island e tela de bloqueio, ancorada por <span style="font-variant-numeric: tabular-nums;">started_at</span></td><td style="padding: 6px 9px; color: #4a3a3a;">app em segundo plano</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 18px; padding: 11px 13px; background: #f3ece9; border: 1px solid #eae1de; border-radius: 10px; font-size: 9.5pt; color: #4a3a3a; line-height: 1.5;">
+    Prioridade sugerida: fundação visual (1.1–1.3) e navegação (2.1–2.3) primeiro, porque afetam todas as telas; depois confirmação de status (5), que é regra de negócio; por fim as telas novas (3) e os cartões de dados (4).
+  </div>
+
+  <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid #eae1de; font-size: 8.5pt; font-weight: 600; color: #8a6b60;">Fonte da verdade visual: MioMei App v3 (12 telas) + guia de estilo v3 · comportamento: escopo funcional · confidencial</div>
+
+</x-import>
+</x-dc>
+</body>
+</html>
